@@ -1,0 +1,253 @@
+{
+  "results": [
+    {
+      "module": "DASH",
+      "tabs": [
+        {
+          "text": "Overview",
+          "border": "1px",
+          "height": 32
+        }
+      ],
+      "rows": [],
+      "overflow": false
+    },
+    {
+      "module": "AP",
+      "tabs": [
+        {
+          "text": "All Bills17",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "Needs Review21",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "Bill Uploads0",
+          "border": "1px",
+          "height": 32
+        }
+      ],
+      "rows": [
+        48
+      ],
+      "overflow": false
+    },
+    {
+      "module": "AR",
+      "tabs": [
+        {
+          "text": "All Invoices0",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "Overdue0",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "Needs Review3",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "Uploaded Invoice3",
+          "border": "1px",
+          "height": 32
+        }
+      ],
+      "rows": [
+        0
+      ],
+      "overflow": false
+    },
+    {
+      "module": "JV",
+      "tabs": [
+        {
+          "text": "All Vouchers0",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "Needs Review1",
+          "border": "1px",
+          "height": 32
+        }
+      ],
+      "rows": [
+        0
+      ],
+      "overflow": false
+    },
+    {
+      "module": "BANK",
+      "tabs": [],
+      "rows": [
+        48
+      ],
+      "overflow": false
+    },
+    {
+      "module": "COA",
+      "tabs": [
+        {
+          "text": "Groups (28) & Ledgers (72)",
+          "border": "1px",
+          "height": 32
+        }
+      ],
+      "rows": [
+        44
+      ],
+      "overflow": false
+    },
+    {
+      "module": "INV",
+      "tabs": [
+        {
+          "text": "Items27",
+          "border": "1px",
+          "height": 32
+        }
+      ],
+      "rows": [
+        48
+      ],
+      "overflow": false
+    },
+    {
+      "module": "GST",
+      "tabs": [
+        {
+          "text": "Summary6",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "By Month1",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "By Vendor16",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "Invoices120",
+          "border": "1px",
+          "height": 32
+        }
+      ],
+      "rows": [
+        44
+      ],
+      "overflow": false
+    },
+    {
+      "module": "CHECKS",
+      "tabs": [
+        {
+          "text": "Open18",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "Resolved0",
+          "border": "1px",
+          "height": 32
+        }
+      ],
+      "rows": [],
+      "overflow": false
+    },
+    {
+      "module": "AUTO",
+      "tabs": [
+        {
+          "text": "All92",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "By AI88",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "By people4",
+          "border": "1px",
+          "height": 32
+        }
+      ],
+      "rows": [],
+      "overflow": false
+    },
+    {
+      "module": "AUTO&page=rules",
+      "tabs": [
+        {
+          "text": "Auto-approve4",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "Bank rules4",
+          "border": "1px",
+          "height": 32
+        },
+        {
+          "text": "Learned from ERP164",
+          "border": "1px",
+          "height": 32
+        }
+      ],
+      "rows": [
+        48
+      ],
+      "overflow": false
+    },
+    {
+      "module": "AUTO&page=policy",
+      "tabs": [
+        {
+          "text": "Client policy3",
+          "border": "1px",
+          "height": 32
+        }
+      ],
+      "rows": [],
+      "overflow": false
+    },
+    {
+      "module": "NEO",
+      "tabs": [],
+      "rows": [],
+      "overflow": false
+    },
+    {
+      "module": "NEO&page=skills",
+      "tabs": [],
+      "rows": [],
+      "overflow": false
+    },
+    {
+      "module": "COA&ledger=new",
+      "tabs": [],
+      "rows": [],
+      "overflow": false
+    },
+    {
+      "module": "INV&item=new",
+      "tabs": [],
+      "rows": [],
+      "overflow": false
+    }
+  ],
+  "errors": []
+}

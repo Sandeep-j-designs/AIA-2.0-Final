@@ -1,0 +1,14 @@
+/* One accent communicates location. Inactive destinations share neutral ink;
+   labels and the row highlight remain independent selection cues. The active
+   icon takes the rail's accent, so it follows the sidebar in every theme. */
+.icon {
+  color: var(--nav-faint);
+}
+
+.icon[data-active="true"] {
+  color: var(--nav-active-ink);
+}
+
+.icon[data-active="true"] > svg {
+  stroke-width: 2.25;
+}

@@ -1,0 +1,493 @@
+import { useMemo, useSyncExternalStore } from "react";
+import { MOCK_BANK_BALANCES } from "@/config/pages/inbox/mock-bank-balances";
+import { notificationActions } from "@/hooks/pages/notifications/use-notifications";
+import {
+  EXTRACTED_ROWS,
+  VOUCHER_TYPE_LABEL,
+  buildStatement,
+  buildTransaction,
+  gstRegistrationsOf,
+  seedFor,
+} from "@/config/pages/inbox/mock-banking";
+import { hasWords } from "@/utils/pages/inbox/bank-text";
+import type {
+  BankAccountType,
+  BankLedgerData,
+  BankTransaction,
+  Statement,
+  TallyVoucherPaymentType,
+} from "@/types/pages/inbox/banking";
+
+/**
+ * Banking state: ledgers, statements and transactions for one company.
+ *
+ * Module-level, so moving between the bank list, an account's transactions
+ * and Statement Logs keeps every edit, and an extraction started from the
+ * upload sheet still finishes after the sheet closes. In memory only: a
+ * reload starts from the mocks again.
+ *
+ * Every write below names the production endpoint it stands in for.
+ */
+
+type BankingState = {
+  ledgers: BankLedgerData[];
+  statements: Statement[];
+  transactions: BankTransaction[];
+};
+
+/** How long the simulated extraction and sync take. */
+const EXTRACTION_MS = 6000;
+const SYNC_MS = 3000;
+
+const stores = new Map<string, BankingState>();
+const listeners = new Set<() => void>();
+
+const seed = (company: string): BankingState => {
+  const data = seedFor(company);
+  return {
+    // DEV: GET /api/bank/account-setup?companyId=…
+    ledgers: structuredClone(data.ledgers),
+    // DEV: GET /api/statements?companyId=…&groupName=bank
+    statements: structuredClone(data.statements),
+    // DEV: GET /api/transactions/bank?companyId=…&customerBank=…
+    transactions: structuredClone(data.transactions),
+  };
+};
+
+const read = (company: string) => {
+  let state = stores.get(company);
+  if (!state) {
+    state = seed(company);
+    stores.set(company, state);
+  }
+  return state;
+};
+
+const write = (company: string, next: Partial<BankingState>) => {
+  stores.set(company, { ...read(company), ...next });
+  listeners.forEach((listener) => listener());
+};
+
+const subscribe = (listener: () => void) => {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+};
+
+/** A row is ready to sync once it has a voucher type and a ledger. */
+const withReadiness = (txn: BankTransaction): BankTransaction => ({
+  ...txn,
+  isReadyToSync: !!txn.paymentType && txn.ledgersNameList.length > 0,
+  voucherConfigLabel: txn.paymentType
+    ? VOUCHER_TYPE_LABEL[txn.paymentType]
+    : null,
+});
+
+const patchTransactions = (
+  company: string,
+  uuids: string[],
+  change: (txn: BankTransaction) => Partial<BankTransaction>
+) =>
+  write(company, {
+    transactions: read(company).transactions.map((txn) =>
+      uuids.includes(txn.bankLineUuid)
+        ? withReadiness({ ...txn, ...change(txn) })
+        : txn
+    ),
+  });
+
+/**
+ * Told when a line turns Approved or back to Needs review, with the line as
+ * it was. The open items (use-bank-matches) listen, which keeps this store
+ * free of an import back into that one.
+ */
+type ReadyListener = (
+  company: string,
+  txn: BankTransaction,
+  ready: boolean
+) => void;
+const readyListeners = new Set<ReadyListener>();
+export const onReadyChange = (fn: ReadyListener) => {
+  readyListeners.add(fn);
+  return () => readyListeners.delete(fn);
+};
+
+export const getBankingState = read;
+// DEV: GET /api/dashboard/overview/cash-on-accounts?companyUuid=… supplies statement closing balances.
+export const bankBalances = (company: string) =>
+  MOCK_BANK_BALANCES.filter((b) => b.company === company);
+export const bankingActions = {
+  /** DEV: PATCH /api/bank/inline-edit?companyId=…&bankLineUuid=… */
+  updateTransaction: (
+    company: string,
+    uuid: string,
+    change: Partial<BankTransaction>
+  ) => patchTransactions(company, [uuid], () => change),
+
+  /**
+   * DEV: POST /api/transactions/v1/transaction-link/{payment|receipt|contra}
+   * -voucher-bulk-edit — one call per voucher type in the selection.
+   */
+  bulkCategorise: (
+    company: string,
+    uuids: string[],
+    change: Partial<BankTransaction>
+  ) => patchTransactions(company, uuids, () => change),
+
+  /**
+   * Code the lines a new bank rule covers now: untouched lines (no type, no
+   * ledger, not yet ready) whose narration carries the rule's words. They
+   * are the AI's work, cited to the rule, and still wait for a review.
+   * Returns the lines coded.
+   *
+   * DEV: server-side, on POST /api/bank/rules.
+   */
+  applyRule: (
+    company: string,
+    rule: {
+      id: string;
+      contains: string;
+      type: TallyVoucherPaymentType;
+      ledger: string;
+    }
+  ) => {
+    const hits = read(company).transactions.filter(
+      (t) =>
+        !t.accoutingReady &&
+        t.thirdPartySyncStatus === "not_synced" &&
+        !t.paymentType &&
+        !t.ledgersNameList.length &&
+        hasWords(t.description, rule.contains)
+    );
+    patchTransactions(
+      company,
+      hits.map((t) => t.bankLineUuid),
+      () => ({
+        paymentType: rule.type,
+        ledgersNameList: [rule.ledger],
+        ledgersUuidList: [`led-${rule.ledger}`],
+        categorisedBy: "ai",
+        ruleId: rule.id,
+      })
+    );
+    return hits;
+  },
+
+  /**
+   * A statement read elsewhere (Neo's reconciliation) lands here: the file
+   * in Statement Logs, and only the rows Banking doesn't hold yet (DUP-01:
+   * same date, narration, amount and side). Returns how many were new.
+   * DEV: POST /api/statements/upload, then the extraction's rows.
+   */
+  importStatement: (
+    company: string,
+    ledgerId: string,
+    fileName: string,
+    from: string,
+    to: string,
+    rows: { date: string; narration: string; amount: number; side: "D" | "C" }[]
+  ) => {
+    const have = read(company).transactions;
+    const fresh = rows.filter(
+      (r) =>
+        !have.some(
+          (t) =>
+            t.bankAccountUuid === ledgerId &&
+            t.transactionDate === r.date &&
+            t.description === r.narration &&
+            Math.abs(Number(t.transactionAmountLc) - r.amount) < 0.005
+        )
+    );
+    write(company, {
+      statements: [
+        buildStatement(ledgerId, fileName, from, to, {
+          fileMetadata: {
+            noOfDuplicates: rows.length - fresh.length,
+            noOfLinesExtracted: rows.length,
+          },
+        }),
+        ...read(company).statements.filter((s) => s.fileName !== fileName),
+      ],
+      transactions: [
+        ...have,
+        ...fresh.map((r) =>
+          buildTransaction(ledgerId, [r.date, r.narration, r.amount, r.side, "n"])
+        ),
+      ],
+    });
+    return { fresh: fresh.length, duplicate: rows.length - fresh.length };
+  },
+
+  /**
+   * A voucher with no statement behind it — a cash payment or receipt typed
+   * in, or raised from an Inbox receipt (4 Nov 2026, phase 2). It waits in
+   * Needs Review like a statement line. Returns the new line's id.
+   *
+   * DEV: POST /api/transactions/v1/transaction-link/{payment|receipt}-voucher
+   * with no bankStmtLineUuid (a cash voucher).
+   */
+  addManual: (
+    company: string,
+    ledgerId: string,
+    v: {
+      crDr: "debit" | "credit";
+      date: string;
+      amount: number;
+      description: string;
+      source?: BankTransaction["source"];
+      ledger?: string;
+    }
+  ) => {
+    const account = read(company).ledgers.find((l) => l.id === ledgerId);
+    const uuid = `cash-${Date.now().toString(36)}`;
+    const txn: BankTransaction = withReadiness({
+      bankLineId: Date.now(),
+      bankLineUuid: uuid,
+      bankAccountUuid: ledgerId,
+      transactionDate: v.date,
+      transactionAmountLc: v.amount.toFixed(2),
+      crDr: v.crDr,
+      bankName: account?.bankName ?? "",
+      bankAccountName: account?.ledgerName ?? "Cash",
+      bankAccountType: account?.accountType ?? "",
+      description: v.description,
+      remarks: "",
+      paymentType: v.crDr === "debit" ? "payment" : "receipt",
+      categorisedBy: "user",
+      ledgersNameList: v.ledger ? [v.ledger] : [],
+      ledgersUuidList: v.ledger ? [`led-${v.ledger}`] : [],
+      thirdPartySyncStatus: "not_synced",
+      thirdPartySyncError: null,
+      thirdPartyPostingDate: "",
+      thirdPartyProduct: "",
+      accoutingReady: false,
+      isReadyToSync: false,
+      companyGstLabel: "",
+      companyGstUuid: "",
+      voucherNo: null,
+      manual: true,
+      source: v.source,
+    });
+    write(company, {
+      transactions: [...read(company).transactions, txn],
+    });
+    return uuid;
+  },
+
+  /** Every line for the company, for code outside a component. */
+  transactionsOf: (company: string) => read(company).transactions,
+
+  /**
+   * DEV: PATCH /api/transactions/bank/toggle-accounting-ready
+   *
+   * Approving (or reverting) a line tells whoever keeps the open items, so
+   * the bills its references settle owe less (or more again).
+   */
+  setAccountingReady: (company: string, uuids: string[], ready: boolean) => {
+    const turning = read(company).transactions.filter(
+      (t) => uuids.includes(t.bankLineUuid) && t.accoutingReady !== ready
+    );
+    patchTransactions(company, uuids, () => ({ accoutingReady: ready }));
+    // A transfer's Contra going back to Needs review lets go of the other
+    // account's line, which then waits for its own review again.
+    if (!ready) {
+      const freed = turning
+        .map((t) => t.pairedWith)
+        .filter((id): id is string => !!id);
+      if (freed.length) {
+        patchTransactions(company, freed, () => ({
+          pairedBy: undefined,
+          accoutingReady: false,
+          paymentType: null,
+          ledgersNameList: [],
+          ledgersUuidList: [],
+          lines: undefined,
+        }));
+        patchTransactions(
+          company,
+          turning.map((t) => t.bankLineUuid),
+          () => ({ pairedWith: undefined })
+        );
+      }
+    }
+    turning.forEach((t) =>
+      readyListeners.forEach((fn) => fn(company, t, ready))
+    );
+  },
+
+  /** DEV: DELETE /api/transactions/bank/delete-transactions */
+  deleteTransactions: (company: string, uuids: string[]) =>
+    write(company, {
+      transactions: read(company).transactions.filter(
+        (txn) => !uuids.includes(txn.bankLineUuid)
+      ),
+    }),
+
+  /**
+   * DEV: POST /api/sync — then poll GET /api/sync for the result. Rows go
+   * to in progress at once and to synced when ERP answers.
+   */
+  sync: (company: string, uuids: string[], onDone: (count: number) => void) => {
+    patchTransactions(company, uuids, () => ({
+      thirdPartySyncStatus: "in_progress",
+      thirdPartyProduct: "ERP",
+      thirdPartySyncError: null,
+    }));
+    window.setTimeout(() => {
+      const now = new Date().toISOString().slice(0, 19);
+      patchTransactions(company, uuids, () => ({
+        thirdPartySyncStatus: "synced",
+        thirdPartyPostingDate: now,
+      }));
+      onDone(uuids.length);
+    }, SYNC_MS);
+  },
+
+  /**
+   * DEV: POST /api/configuration/integration/zoho/accounts-mapping — the
+   * upload saves the type and bank chosen for an unmapped ledger.
+   */
+  mapLedger: (
+    company: string,
+    ledgerId: string,
+    accountType: BankAccountType,
+    bankName: string
+  ) =>
+    write(company, {
+      ledgers: read(company).ledgers.map((ledger) =>
+        ledger.id === ledgerId
+          ? {
+              ...ledger,
+              accountType,
+              bankName,
+              korefiBankName: bankName,
+              typeOfAccountFixed: accountType,
+            }
+          : ledger
+      ),
+    }),
+
+  /**
+   * DEV: POST /api/upload-file-to-dms (presigned URL) → PUT the file →
+   * POST /api/statements. Extraction then runs server-side; the screens poll
+   * GET /api/statements and POST /api/workflow/status for its stage.
+   *
+   * Here a statement appears as Extracting and, a few seconds later, turns
+   * Extracted and adds its transactions to Needs Review.
+   */
+  addStatement: (
+    company: string,
+    ledgerId: string,
+    fileName: string,
+    onExtracted: (statement: Statement, count: number) => void
+  ) => {
+    const ledger = read(company).ledgers.find((l) => l.id === ledgerId);
+    if (!ledger) return;
+    const id = `${Date.now().toString(36)}-${Math.random()
+      .toString(36)
+      .slice(2, 7)}`;
+    const uploaded: Statement = {
+      statementStartDate: "",
+      statementEndDate: "",
+      fileName,
+      bankName: ledger.bankName ?? "",
+      fileCategory:
+        ledger.accountType === "credit_card"
+          ? "credit_card_statement"
+          : "bank_statement",
+      accountNumber: ledger.ledgerName.match(/\d{4,}/)?.[0] ?? "",
+      status: "file_uploaded",
+      statusMessage: null,
+      fileUuid: `file-${id}`,
+      bankStmtStatusUuid: `stmt-${id}`,
+      bankAccountNumber: ledger.ledgerName.match(/\d{4,}/)?.[0] ?? "",
+      bankAccountName: ledger.ledgerName,
+      bankAccountType: ledger.accountType,
+      bankAccountUuid: ledgerId,
+      workflowStage: "extracting",
+      enrichmentPercentage: null,
+      workflowError: null,
+    };
+    write(company, { statements: [uploaded, ...read(company).statements] });
+    window.setTimeout(() => {
+      const rows =
+        EXTRACTED_ROWS[
+          ledger.accountType === "credit_card" ? "credit_card" : "bank"
+        ];
+      const gst = gstRegistrationsOf(company)[0];
+      const added = rows.map((row) => buildTransaction(ledgerId, row, gst));
+      const done: Statement = {
+        ...uploaded,
+        status: "file_hitl_success",
+        statementStartDate: "2026-09-01",
+        statementEndDate: "2026-09-30",
+        workflowStage: "extracted",
+        enrichmentPercentage: 100,
+        fileMetadata: { noOfDuplicates: 0, noOfLinesExtracted: added.length },
+      };
+      const state = read(company);
+      write(company, {
+        statements: state.statements.map((s) =>
+          s.bankStmtStatusUuid === uploaded.bankStmtStatusUuid ? done : s
+        ),
+        transactions: [...state.transactions, ...added],
+      });
+      onExtracted(done, added.length);
+      // Extraction can take up to 30 minutes; the notice outlives the toast.
+      // DEV: raised server-side when the statement's workflow reaches extracted.
+      notificationActions.push(
+        {
+          companyId: company,
+          kind: "statement_extracted",
+          data: {
+            file: fileName,
+            count: added.length,
+            account: ledger.ledgerName,
+          },
+          target: {
+            href: `/inbox?module=BANK&account=${encodeURIComponent(ledgerId)}`,
+            label: ledger.ledgerName,
+          },
+          actor: { kind: "ai" },
+          refs: [uploaded.bankStmtStatusUuid],
+        },
+        { toast: false }
+      );
+    }, EXTRACTION_MS);
+  },
+
+  /** DEV: DELETE /api/statements/delete-statement */
+  deleteStatement: (company: string, bankStmtStatusUuid: string) =>
+    write(company, {
+      statements: read(company).statements.filter(
+        (s) => s.bankStmtStatusUuid !== bankStmtStatusUuid
+      ),
+    }),
+};
+
+export const isCashLedger = (ledger: BankLedgerData) =>
+  ledger.typeOfAccountFixed.trim().toLowerCase() === "cash";
+
+export const useBanking = (company: string) => {
+  const state = useSyncExternalStore(
+    subscribe,
+    () => read(company),
+    () => read(company)
+  );
+  // Production's server counts these; recounting keeps the list honest as
+  // rows are marked ready here.
+  const ledgers = useMemo(
+    () =>
+      state.ledgers.map((ledger) => ({
+        ...ledger,
+        unreconciledCount: state.transactions.filter(
+          (txn) => txn.bankAccountUuid === ledger.id && !txn.accoutingReady
+        ).length,
+      })),
+    [state]
+  );
+  return {
+    ledgers,
+    statements: state.statements,
+    transactions: state.transactions,
+  };
+};

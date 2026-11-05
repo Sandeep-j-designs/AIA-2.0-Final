@@ -1,0 +1,332 @@
+/*
+  The illustrated drop zone: a small stack of the documents it takes.
+
+  Everything here answers the pointer — hover fans the sheets, a drag lifts
+  them and sets the border moving, a drop squares them up and stamps a tick.
+  Nothing moves on its own: the marching border only runs while files are
+  over the zone, and reduced motion collapses all of it.
+*/
+.zone {
+  position: relative;
+  isolation: isolate;
+}
+
+/* The dashed edge, drawn so it can move. A CSS dashed border cannot. The rect
+   is the full box with a 2px stroke; the SVG clips the outer half, leaving a
+   1px line that follows the corner radius. */
+.edge {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-md, 8px);
+  pointer-events: none;
+}
+.edge rect {
+  fill: none;
+  stroke: var(--pi-line-2);
+  stroke-width: 2;
+  stroke-dasharray: 6 5;
+  transition: stroke var(--dur-fast) ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .zone:not(:disabled):hover .edge rect {
+    stroke: var(--pi-brand-border);
+  }
+}
+.zone[data-state="over"] .edge rect {
+  stroke: var(--pi-brand);
+  animation: march 0.6s linear infinite;
+}
+.zone[data-state="dropped"] .edge rect {
+  stroke: var(--pi-brand);
+}
+@keyframes march {
+  to {
+    stroke-dashoffset: -22;
+  }
+}
+
+/* The stack. */
+.stage {
+  position: relative;
+  width: 180px;
+  height: 78px;
+  margin-bottom: 4px;
+}
+.sheet {
+  --x: 0px;
+  --y: 0px;
+  --r: 0deg;
+  --s: 1;
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  display: flex;
+  width: 46px;
+  height: 58px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 9px 7px 7px;
+  background: hsl(var(--background));
+  border: 1px solid var(--pi-line);
+  border-radius: var(--radius-xs, 4px);
+  box-shadow: var(--shadow-contact);
+  transform: translateX(-50%) translate(var(--x), var(--y)) rotate(var(--r))
+    scale(var(--s));
+  transform-origin: 50% 100%;
+  transition:
+    transform 0.42s cubic-bezier(0.34, 1.4, 0.64, 1),
+    box-shadow var(--dur-med) ease;
+}
+.sheet[data-pos="left"] {
+  --x: -30px;
+  --y: 1px;
+  --r: -8deg;
+}
+.sheet[data-pos="right"] {
+  --x: 30px;
+  --y: 1px;
+  --r: 8deg;
+  transition-delay: 25ms;
+}
+.sheet[data-pos="front"] {
+  z-index: 1;
+  transition-delay: 10ms;
+}
+
+/* Lines of text on the page — a document, not a file icon. */
+.line {
+  display: block;
+  height: 3px;
+  background: var(--pi-fill-2);
+  border-radius: 2px;
+}
+.line:nth-child(1) {
+  width: 70%;
+}
+.line:nth-child(2) {
+  width: 92%;
+}
+.line:nth-child(3) {
+  width: 54%;
+}
+.tag {
+  margin-top: auto;
+  align-self: flex-start;
+  padding: 1px 4px;
+  font-size: 8px; /* type-exempt: decorative miniature */
+  font-weight: 600;
+  line-height: 11px;
+  letter-spacing: 0.04em;
+  color: var(--pi-body);
+  background: var(--pi-fill);
+  border-radius: 2px;
+}
+/* The right sheet's tag sits at its outer edge, clear of the front badge. */
+.sheet[data-pos="right"] .tag {
+  align-self: flex-end;
+}
+.sheet[data-pos="front"] .tag {
+  color: var(--pi-brand);
+  background: var(--pi-brand-tint);
+}
+
+/* The badge on the front sheet: upload arrow, swapped for a tick on drop. */
+.badge {
+  position: absolute;
+  right: -5px;
+  bottom: -8px;
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  color: #fff;
+  background: var(--pi-brand);
+  border: 2px solid hsl(var(--background));
+  border-radius: 999px;
+  transition:
+    background-color var(--dur-fast) ease,
+    transform 0.42s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.badge > svg {
+  grid-area: 1 / 1;
+  width: 12px;
+  height: 12px;
+  stroke-width: 2.4;
+  transition:
+    opacity var(--dur-fast) ease,
+    transform var(--dur-med) cubic-bezier(0.22, 1, 0.36, 1),
+    filter var(--dur-fast) ease;
+}
+.badge > .tick,
+.badge > .cross {
+  opacity: 0;
+  transform: scale(0.6);
+  filter: blur(2px);
+}
+.tick path {
+  stroke-dasharray: 22;
+  stroke-dashoffset: 22;
+}
+
+/* Hover: the sheets fan a little, the arrow nudges up. */
+@media (hover: hover) and (pointer: fine) {
+  .zone:not(:disabled):hover:not([data-state]) .sheet[data-pos="left"] {
+    --x: -36px;
+    --y: -1px;
+    --r: -12deg;
+  }
+  .zone:not(:disabled):hover:not([data-state]) .sheet[data-pos="right"] {
+    --x: 36px;
+    --y: -1px;
+    --r: 12deg;
+  }
+  .zone:not(:disabled):hover:not([data-state]) .sheet[data-pos="front"] {
+    --y: -4px;
+  }
+  .zone:not(:disabled):hover:not([data-state]) .arrow {
+    transform: translateY(-1px);
+  }
+}
+
+/* Drag over: lifted clear, ready to receive. */
+.zone[data-state="over"] .sheet[data-pos="left"] {
+  --x: -42px;
+  --y: -5px;
+  --r: -15deg;
+}
+.zone[data-state="over"] .sheet[data-pos="right"] {
+  --x: 42px;
+  --y: -5px;
+  --r: 15deg;
+}
+.zone[data-state="over"] .sheet[data-pos="front"] {
+  --y: -11px;
+  box-shadow: var(--shadow-1);
+}
+.zone[data-state="over"] .badge {
+  transform: translateY(-2px) scale(1.08);
+}
+
+/* Dropped: the stack squares up and settles in, and the tick is drawn. */
+.zone[data-state="dropped"] .sheet {
+  --x: 0px;
+  --r: 0deg;
+  --y: 6px;
+  --s: 0.96;
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.zone[data-state="dropped"] .sheet[data-pos="left"] {
+  --x: -3px;
+  --y: 4px;
+  --r: -2deg;
+}
+.zone[data-state="dropped"] .sheet[data-pos="right"] {
+  --x: 3px;
+  --y: 4px;
+  --r: 2deg;
+}
+.zone[data-state="dropped"] .badge {
+  background: var(--pi-success);
+}
+.zone[data-state="dropped"] .arrow {
+  opacity: 0;
+  transform: translateY(-6px);
+  filter: blur(2px);
+}
+.zone[data-state="dropped"] .tick {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+.zone[data-state="dropped"] .tick path {
+  animation: draw 0.3s 0.08s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* The title swaps with a short rise, so the change of wording is noticed. */
+.title {
+  animation: title-in var(--dur-med) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes title-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+
+/* A spreadsheet is drawn as cells: a header row in ink, two rows of data. */
+.cells {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+.cells > span {
+  height: 5px;
+  background: var(--pi-fill-2);
+  border-radius: 1px;
+}
+.cells > span:nth-child(-n + 3) {
+  background: var(--pi-line-strong);
+}
+
+/* One file at a time: one sheet, which tilts rather than fans. */
+@media (hover: hover) and (pointer: fine) {
+  .zone:not(:disabled):hover:not([data-state])
+    .stage[data-single]
+    .sheet[data-pos="front"] {
+    --r: -4deg;
+  }
+}
+.zone[data-state="over"] .stage[data-single] .sheet[data-pos="front"] {
+  --r: -6deg;
+}
+
+/* Refused mid-drag (too many files, or a type the zone doesn't take): the
+   stack stays tucked in, the edge and badge go red with a cross, and the
+   title says why. The drop itself still checks and explains. */
+.zone[data-state="refused"] .edge rect {
+  stroke: var(--pi-danger);
+}
+.zone[data-state="refused"] .sheet {
+  --s: 0.97;
+  --y: 2px;
+}
+.zone[data-state="refused"] .badge {
+  background: var(--pi-danger);
+}
+.zone[data-state="refused"] .arrow {
+  opacity: 0;
+  transform: scale(0.6);
+  filter: blur(2px);
+}
+.zone[data-state="refused"] .cross {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .badge,
+  .badge > svg,
+  .edge rect {
+    transition: none !important;
+  }
+  .zone[data-state="over"] .edge rect,
+  .title,
+  .zone[data-state="dropped"] .tick path {
+    animation: none;
+  }
+  .tick path {
+    stroke-dashoffset: 0;
+  }
+}
+/* Local, so the module does not lean on a global keyframe name. */
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

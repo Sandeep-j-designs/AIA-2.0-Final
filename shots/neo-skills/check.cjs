@@ -1,0 +1,56 @@
+const { chromium } = require('/Users/sandeepbalajij/AI Accountant/Prototypes/Inbox-Experiment/node_modules/playwright-core');
+const assert = require('node:assert/strict');
+(async () => {
+  const browser = await chromium.launch({ channel: 'chrome', headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
+    page.setDefaultTimeout(15000);
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    const visit = () => page.goto('http://localhost:3001/inbox?module=NEO&page=skills');
+    await visit();
+    await page.getByRole('heading', {name:'Bill entry',exact:true}).waitFor();
+    assert.equal(await page.locator('.neo-skill-card').count(), 3);
+    assert(await page.getByRole('button', {name:'Start Three-way reconciliation',exact:true}).isDisabled());
+    await page.screenshot({path:'shots/neo-skills/library-desktop.png'});
+    const detailsButton = page.getByRole('button',{name:'How Bill entry works',exact:true});
+    await detailsButton.click();
+    const details = page.getByRole('dialog',{name:'Bill entry',exact:true});
+    await details.waitFor();
+    for (const title of ['Before you start','How Neo works','Company policy','When something is missing','What you get','Your review','When it runs']) await details.getByRole('heading',{name:title,exact:true}).waitFor();
+    await page.screenshot({path:'shots/neo-skills/details-desktop.png'});
+    await page.keyboard.press('Escape');
+    assert(await detailsButton.evaluate(el=>el===document.activeElement));
+    await page.getByRole('button',{name:'Start Bill entry',exact:true}).click();
+    await page.getByText('Bill entry · v1',{exact:true}).waitFor();
+    await page.getByRole('button',{name:'Enter 10 vouchers',exact:true}).waitFor();
+    await page.screenshot({path:'shots/neo-skills/bill-run.png'});
+    // Reload abandons the simulated run before any creation is confirmed.
+    await visit();
+    await page.getByRole('button',{name:'Start Supplier follow-up',exact:true}).click();
+    await page.getByText('Supplier follow-up · v1',{exact:true}).waitFor();
+    await page.getByText('Which bill is this about?',{exact:true}).waitFor();
+    await visit();
+    await page.getByRole('button',{name:/Organisation:.*Switch organisation/}).click();
+    await page.getByRole('option',{name:/Summit Hospitality/}).click();
+    const reconStart = page.getByRole('button',{name:'Start Three-way reconciliation',exact:true});
+    assert(await reconStart.isEnabled());
+    await reconStart.click();
+    await page.getByText('Three-way reconciliation · v1',{exact:true}).waitFor();
+    await page.getByText('From when are Zomato and Swiggy booked at gross?',{exact:true}).waitFor();
+    await page.screenshot({path:'shots/neo-skills/reconciliation-policy.png'});
+    await visit();
+    await page.setViewportSize({width:390,height:844});
+    await page.getByRole('heading',{name:'Bill entry',exact:true}).waitFor();
+    assert(await page.locator('.neo-skills-scroll').evaluate(el=>el.scrollWidth<=el.clientWidth));
+    await page.screenshot({path:'shots/neo-skills/library-mobile.png'});
+    await page.getByRole('button',{name:'How Supplier follow-up works',exact:true}).click();
+    const mobile = page.getByRole('dialog',{name:'Supplier follow-up',exact:true});
+    await mobile.waitFor();
+    assert(await mobile.evaluate(el=>el.scrollWidth<=el.clientWidth));
+    await page.screenshot({path:'shots/neo-skills/details-mobile.png'});
+    await page.getByRole('button',{name:'Close skill details'}).click();
+    assert.deepEqual(errors, []);
+    console.log('Library, details, focus, all three workflow starts, company scope and mobile layout passed');
+  } finally { await browser.close(); }
+})().catch(e=>{console.error(e);process.exit(1)});

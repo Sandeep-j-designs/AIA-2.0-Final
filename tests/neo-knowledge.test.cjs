@@ -1,0 +1,16 @@
+const ts = require('typescript');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const assert = require('node:assert/strict');
+const source = ts.transpileModule(fs.readFileSync('hooks/pages/neo/use-knowledge.ts','utf8'), { compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020} }).outputText;
+const exportsObject = {};
+vm.runInNewContext(source,{exports:exportsObject,require:()=>({})});
+const learn = exportsObject.learnPatterns;
+const item=(id,company,ledger,status='Approved')=>({id,company,status,route:'AP',form:{party:'Supplier',invoiceNo:id,date:'2026-10-28',lines:[{ledger}]}});
+assert.equal(learn([item('1','a','Travel'),item('2','b','Travel')],'a').length,0,'Companies cannot share evidence');
+assert.equal(learn([item('1','a','Travel'),item('2','a','Meals')],'a').length,0,'Ties are not learned');
+assert.equal(learn([item('1','a','Travel'),item('2','a','Travel','Needs Review')],'a').length,0,'Unapproved records cannot teach patterns');
+const result=learn([item('1','a','Travel'),item('2','a','Travel'),item('3','a','Meals')],'a');
+assert.equal(result[0].ledger,'Travel');
+assert.equal(result[0].total,3,'Keep contradictory evidence visible');
+console.log('Knowledge learning: company isolation, approval scope, ambiguous samples and evidence passed');

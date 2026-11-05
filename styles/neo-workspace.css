@@ -1,0 +1,1032 @@
+/* Use the workspace's actual width, including space reserved for Neo. */
+.review-toolbar-container {
+  container: review-toolbar / inline-size;
+}
+
+.review-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.review-toolbar-routing {
+  display: flex;
+  flex: 1;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.review-toolbar-reason {
+  min-width: 0;
+}
+
+.review-toolbar-routing > :not(.review-toolbar-reason) {
+  flex-shrink: 0;
+}
+
+html[data-neo-open] .review-toolbar-reason-text {
+  display: none;
+}
+
+html[data-neo-open] .review-toolbar-reason {
+  flex-shrink: 0;
+}
+
+.review-toolbar-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+@container review-toolbar (max-width: 1200px) {
+  .review-toolbar-origin {
+    display: none;
+  }
+}
+
+@container review-toolbar (max-width: 850px) {
+  .review-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .review-toolbar-actions {
+    justify-content: flex-end;
+  }
+}
+
+@container review-toolbar (max-width: 480px) {
+  .review-toolbar-routing {
+    flex-wrap: wrap;
+  }
+  .review-toolbar {
+    padding-inline: 12px;
+  }
+  .review-toolbar-document-label {
+    display: none;
+  }
+  .review-toolbar-actions {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .review-toolbar-routing [role="combobox"] {
+    max-width: calc(100cqi - 120px);
+    overflow: hidden;
+  }
+}
+
+.neo-panel {
+  isolation: isolate;
+}
+.neo-panel button {
+  overflow-wrap: anywhere;
+}
+
+/* The embedded review sheets have their own fixed toast stacks. Keep both
+   notification systems clear of Neo's composer, including in overlay mode. */
+html[data-neo-open] :is(.ap-sheet, .ar-sheet) .toasts,
+html[data-neo-open] [data-sonner-toaster][data-y-position="bottom"] {
+  bottom: 160px;
+}
+
+@media (min-width: 1440px) {
+  html[data-neo-open] :is(.ap-sheet, .ar-sheet) .toasts {
+    right: calc(var(--neo-w, 24rem) + 16px);
+    bottom: 16px;
+  }
+  html[data-neo-open] [data-sonner-toaster][data-y-position="bottom"] {
+    bottom: var(--offset-bottom, 24px);
+  }
+}
+
+/* ------------------------------------------------------------------------
+   Neo's reading voice (19 Oct 2026). Neo's answers are set in Source Serif 4,
+   apart from the UI's Plex Sans, at a reading size and measure — the way the
+   chat apps give the assistant its own voice. Everything here is tokens.
+   ------------------------------------------------------------------------ */
+.neo-reading {
+  font-family: var(--font-family-reading);
+  font-optical-sizing: auto;
+}
+
+.neo-prose {
+  font-family: var(--font-family-reading);
+  font-optical-sizing: auto;
+  font-size: var(--type-lead);
+  line-height: 1.65;
+  color: var(--pi-ink);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.neo-panel .neo-prose {
+  font-size: var(--type-body);
+  line-height: 1.6;
+}
+.neo-prose > :first-child {
+  margin-top: 0;
+}
+.neo-prose > :last-child {
+  margin-bottom: 0;
+}
+.neo-prose p,
+.neo-prose ul,
+.neo-prose ol,
+.neo-prose blockquote {
+  margin: 0 0 0.85em;
+}
+.neo-prose strong {
+  font-weight: 600;
+  color: var(--pi-ink);
+}
+.neo-prose em {
+  font-style: italic;
+}
+.neo-prose h1,
+.neo-prose h2,
+.neo-prose h3,
+.neo-prose h4 {
+  font-family: var(--font-family-primary);
+  font-weight: 600;
+  color: var(--pi-ink);
+  letter-spacing: 0;
+  margin: 1.4em 0 0.5em;
+}
+.neo-prose h1,
+.neo-prose h2 {
+  font-size: var(--type-h3);
+  line-height: 28px;
+}
+.neo-prose h3,
+.neo-prose h4 {
+  font-size: var(--type-body);
+  line-height: 24px;
+}
+.neo-prose ul,
+.neo-prose ol {
+  padding-left: 1.4em;
+}
+.neo-prose ul {
+  list-style: disc;
+}
+.neo-prose ol {
+  list-style: decimal;
+}
+.neo-prose li {
+  margin: 0.1em 0;
+  padding-left: 0.2em;
+}
+.neo-prose li::marker {
+  color: var(--pi-faint);
+}
+.neo-prose a:not(.neo-cite) {
+  color: var(--pi-brand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.neo-prose code {
+  font-family: var(--font-family-mono);
+  font-size: 0.82em;
+  background: var(--pi-fill);
+  border-radius: var(--radius-xs, var(--radius-xs, 4px));
+  padding: 0.1em 0.35em;
+}
+.neo-prose blockquote {
+  border-left: 2px solid var(--pi-line-2);
+  padding-left: 1em;
+  color: var(--pi-body);
+}
+.neo-prose hr {
+  border: 0;
+  border-top: 1px solid var(--pi-line);
+  margin: 1.5em 0;
+}
+
+/* Tables in an answer: UI face, figures right-aligned in tabular numerals,
+   rows ruled, header on the head strip. */
+.neo-prose .neo-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-family-primary);
+  font-size: var(--type-small);
+  line-height: 20px;
+}
+.neo-prose .neo-table th {
+  background: var(--pi-head-bg);
+  color: var(--pi-body);
+  font-weight: 500;
+  font-size: var(--type-caption);
+  text-align: left;
+  white-space: nowrap;
+}
+.neo-prose .neo-table th,
+.neo-prose .neo-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--pi-line);
+}
+/* Cells break between words, never inside one; a wide table scrolls. */
+.neo-prose .neo-table td {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.neo-prose .neo-table td:first-child,
+.neo-prose .neo-table td:last-child {
+  white-space: nowrap;
+}
+.neo-prose .neo-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.neo-prose .neo-table [data-num] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Working: the star breathes, the status line shimmers. */
+@keyframes neo-breathe {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.82) rotate(45deg);
+    opacity: 0.7;
+  }
+}
+.neo-breathe {
+  animation: neo-breathe 1.6s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes neo-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+.neo-shimmer {
+  background: linear-gradient(
+      90deg,
+      var(--pi-body) 0%,
+      var(--pi-body) 40%,
+      var(--pi-ink) 50%,
+      var(--pi-body) 60%,
+      var(--pi-body) 100%
+    )
+    0 0 / 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: neo-shimmer 2.2s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .neo-breathe,
+  .neo-shimmer {
+    animation: none;
+  }
+  .neo-shimmer {
+    color: var(--pi-body);
+    background: none;
+  }
+}
+
+/* A document in the canvas keeps its card chrome but drops the thread's
+   narrow-measure caps. */
+.neo-canvas > div > * {
+  max-width: none;
+}
+
+/* Small laptops (20 Oct 2026): 1366 and 1280 wide are the norm for our
+   users, so Neo's reading face steps down a size below 1440px and the
+   answer keeps more of the screen. */
+@media (max-width: 1439px) {
+  .neo-prose {
+    font-size: var(--type-body);
+    line-height: 1.6;
+  }
+  .neo-panel .neo-prose {
+    font-size: var(--type-body);
+    line-height: 1.55;
+  }
+}
+
+/* Neo home and skill library: navy surfaces, generous spacing, quiet detail. */
+.neo-skills-scroll {
+  background: var(--pi-page, #f3f6fa);
+}
+.neo-skills-content {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px 32px 40px;
+}
+.neo-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--type-caption);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+}
+.neo-skill-filters button:focus-visible {
+  outline: 2px solid var(--pi-brand);
+  outline-offset: 3px;
+}
+.neo-library-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 0 0 32px;
+}
+.neo-library-header h1 {
+  margin-top: 16px;
+  max-width: 660px;
+  font-size: var(--type-h1);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+  color: var(--pi-ink);
+}
+.neo-library-header p {
+  max-width: 540px;
+  margin-top: 12px;
+  font-size: var(--type-small);
+  line-height: 1.8;
+  color: var(--pi-body);
+}
+.neo-library-mark {
+  flex: 0 0 104px;
+  height: 104px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--pi-line);
+  border-radius: 28px;
+  background: linear-gradient(
+    135deg,
+    var(--pi-brand-tint),
+    hsl(var(--background))
+  );
+  transform: rotate(-8deg);
+  box-shadow: 8px 8px 0 var(--pi-brand-tint);
+  color: var(--pi-brand);
+}
+.neo-library-mark svg {
+  width: 44px;
+  height: 44px;
+}
+.neo-library-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.neo-skill-search {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 420px;
+  max-width: 100%;
+  padding: 12px 12px;
+  border: 1px solid var(--pi-line);
+  border-radius: var(--radius-md, 8px);
+  background: hsl(var(--background));
+  color: var(--pi-body);
+}
+.neo-skill-search:focus-within {
+  outline: 2px solid var(--pi-brand);
+  outline-offset: 2px;
+}
+.neo-skill-search input {
+  min-width: 0;
+  flex: 1;
+  font-size: var(--type-small);
+  background: transparent;
+  color: var(--pi-ink);
+  outline: none;
+}
+.neo-skill-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 32px;
+}
+.neo-skill-filters button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm, 6px);
+  padding: 8px 12px;
+  font-size: var(--type-caption);
+  color: var(--pi-body);
+}
+.neo-skill-filters button:hover {
+  background: var(--pi-brand-tint);
+}
+.neo-skill-filters button[aria-pressed="true"] {
+  background: var(--pi-brand);
+  color: hsl(var(--background));
+}
+.neo-skill-filters button span {
+  font-size: var(--type-caption);
+  opacity: 0.75;
+}
+.neo-skill-section {
+  margin-top: 32px;
+}
+.neo-skill-section > h2 {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--pi-ink);
+}
+.neo-skill-section > h2 span {
+  font-size: var(--type-caption);
+  font-weight: 400;
+  color: var(--pi-faint);
+}
+.neo-skill-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.neo-skill-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--pi-line);
+  border-radius: var(--radius-md, 8px);
+  background: hsl(var(--background));
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.neo-skill-card:hover {
+  border-color: var(--pi-line-strong);
+  box-shadow: 0 6px 24px #10284008;
+}
+.neo-skill-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 20px;
+}
+.neo-skill-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md, 8px);
+  background: var(--pi-brand-tint);
+  color: var(--pi-brand);
+}
+.neo-skill-card code {
+  font-size: var(--type-caption);
+  color: var(--pi-faint);
+}
+.neo-skill-card h3 {
+  margin-top: 16px;
+  font-size: var(--type-lead);
+  font-weight: 600;
+  color: var(--pi-ink);
+}
+.neo-skill-description {
+  margin-top: 8px;
+  font-size: var(--type-small);
+  line-height: 1.7;
+  color: var(--pi-body);
+}
+.neo-skill-needs {
+  margin: 16px 0 12px;
+  font-size: var(--type-caption);
+  line-height: 1.6;
+  color: var(--pi-faint);
+}
+.neo-skill-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: var(--type-caption);
+  line-height: 1.6;
+  color: var(--pi-body);
+}
+.neo-skill-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 16px;
+}
+.neo-skills-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--pi-body);
+}
+.neo-skills-empty h2 {
+  font-size: var(--type-h3);
+  font-weight: 600;
+  color: var(--pi-ink);
+}
+.neo-skills-empty p {
+  margin-top: 8px;
+  font-size: var(--type-small);
+}
+@media (max-width: 640px) {
+  .neo-skills-content {
+    padding: 16px 16px 32px;
+  }
+  .neo-library-mark {
+    display: none;
+  }
+  .neo-library-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .neo-skill-grid {
+    grid-template-columns: 1fr;
+  }
+  .neo-skill-card-body {
+    padding: 20px;
+  }
+  .neo-skill-filters {
+    gap: 3px;
+  }
+  .neo-skill-filters button {
+    padding: 8px;
+  }
+}
+
+/* A single, quiet focal point for starting a conversation. */
+.neo-home-scroll {
+  background:
+    radial-gradient(
+      ellipse at 50% 42%,
+      var(--pi-brand-tint) 0%,
+      transparent 65%
+    ),
+    hsl(var(--background));
+}
+.neo-home-content {
+  width: min(100%, 760px);
+  min-height: 100%;
+  margin: 0 auto;
+  padding: clamp(60px, 16vh, 170px) 24px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.neo-home-intro {
+  text-align: center;
+}
+.neo-home-mark {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 24px;
+  color: var(--pi-brand);
+}
+.neo-home-greeting {
+  font-size: var(--type-body);
+  color: var(--pi-body);
+}
+.neo-home-intro h1 {
+  margin-top: 12px;
+  color: var(--pi-ink);
+  font-size: var(--type-h1);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+.neo-home-composer {
+  width: 100%;
+  margin-top: 32px;
+  border-radius: var(--radius-md, 8px);
+  background: hsl(var(--background));
+  box-shadow: 0 12px 36px #10284008;
+  text-align: left;
+}
+.neo-home-prompts {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.neo-home-prompts button {
+  padding: 8px 12px;
+  border: 1px solid var(--pi-line);
+  border-radius: var(--radius-sm, 6px);
+  background: hsl(var(--background) / 0.6);
+  color: var(--pi-body);
+  font-size: var(--type-caption);
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+.neo-home-prompts button:hover {
+  background: var(--pi-brand-tint);
+  border-color: var(--pi-line-strong);
+  color: var(--pi-ink);
+}
+.neo-home-prompts button:focus-visible,
+.neo-home-skills:focus-visible {
+  outline: 2px solid var(--pi-brand);
+  outline-offset: 3px;
+}
+.neo-home-skills {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  color: var(--pi-faint);
+  font-size: var(--type-caption);
+  border-radius: var(--radius-xs, 4px);
+}
+.neo-home-skills:hover {
+  color: var(--pi-ink);
+}
+.neo-home-note {
+  margin-top: auto;
+  padding-top: 56px;
+  color: var(--pi-faint);
+  text-align: center;
+  font-size: var(--type-caption);
+}
+@media (max-width: 640px) {
+  .neo-home-content {
+    padding: 64px 20px 24px;
+  }
+  .neo-home-mark {
+    margin-bottom: 20px;
+    width: 28px;
+    height: 28px;
+  }
+  .neo-home-prompts {
+    gap: 8px;
+  }
+  .neo-home-prompts button {
+    font-size: var(--type-caption);
+    padding: 8px 12px;
+  }
+}
+@media (max-height: 650px) {
+  .neo-home-content {
+    padding-top: 32px;
+  }
+}
+
+/* Neo discovery: focused chat entry and readable procedure rows. */
+.neo-home-content {
+  width: min(100%, 900px);
+  padding-top: clamp(40px, 10vh, 110px);
+}
+.neo-home-subtitle {
+  margin-top: 16px;
+  color: var(--pi-body);
+  font-size: var(--type-body);
+}
+.neo-home-task-heading {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 36px;
+  font-size: var(--type-caption);
+  color: var(--pi-body);
+}
+.neo-home-task-heading a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--pi-brand);
+}
+.neo-home-prompts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  gap: 12px;
+  margin-top: 12px;
+}
+.neo-home-prompts button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  padding: 20px;
+  background: hsl(var(--background));
+  border-radius: 12px;
+}
+.neo-home-prompts strong {
+  color: var(--pi-ink);
+  font-weight: 600;
+}
+.neo-home-prompts button span {
+  line-height: 1.5;
+}
+.neo-home-note {
+  margin-top: 24px;
+  padding-top: 8px;
+}
+.neo-procedure-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.neo-procedure-list .neo-skill-card-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 24px;
+  padding: 24px 28px;
+}
+.neo-procedure-list .neo-skill-card-body > div:first-child {
+  grid-column: 1 / -1;
+}
+.neo-procedure-list h3 {
+  grid-column: 1;
+}
+.neo-procedure-list .neo-skill-description {
+  grid-column: 1;
+  max-width: 680px;
+}
+.neo-skill-example {
+  grid-column: 1;
+  margin-top: 12px;
+  font-size: var(--type-caption);
+  line-height: 1.6;
+  color: var(--pi-body);
+}
+.neo-procedure-list .neo-skill-card-body > p {
+  grid-column: 1;
+}
+.neo-procedure-list .neo-skill-actions {
+  grid-column: 2;
+  grid-row: 2 / 5;
+  align-self: center;
+  margin: 0;
+  padding: 0;
+}
+@media (max-width: 640px) {
+  .neo-home-prompts {
+    grid-template-columns: 1fr;
+  }
+  .neo-home-prompts button {
+    padding: 16px;
+  }
+  .neo-procedure-list .neo-skill-card-body {
+    display: flex;
+    padding: 20px;
+  }
+  .neo-procedure-list .neo-skill-actions {
+    align-self: flex-start;
+    margin-top: 16px;
+  }
+}
+
+.knowledge-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px;
+  background: hsl(var(--background));
+  border: 1px solid var(--pi-line);
+  border-radius: 12px;
+}
+.knowledge-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 24px 0 16px;
+}
+.knowledge-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  text-align: left;
+  padding: 24px;
+  border: 1px solid var(--pi-line);
+  border-radius: 12px;
+  background: hsl(var(--background));
+}
+.knowledge-row:hover {
+  border-color: var(--pi-brand);
+}
+.knowledge-row:focus-visible,
+.knowledge-home:focus-visible {
+  outline: 2px solid var(--pi-brand);
+  outline-offset: 3px;
+}
+.knowledge-status {
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: var(--type-caption);
+  white-space: nowrap;
+}
+.knowledge-home {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--pi-line);
+  border-radius: 12px;
+  width: 100%;
+  margin-top: 24px;
+  background: hsl(var(--background) / 0.7);
+}
+@media (max-width: 640px) {
+  .knowledge-row {
+    flex-wrap: wrap;
+    padding: 16px;
+    gap: 12px;
+  }
+  .knowledge-row > span:nth-child(2) {
+    flex-basis: calc(100% - 60px);
+  }
+  .knowledge-toolbar > label {
+    width: 100%;
+  }
+}
+
+/* Skills use only the space their content needs. */
+.neo-skills-content.neo-skills-compact {
+  max-width: 1120px;
+  margin-left: 0;
+  margin-right: 0;
+}
+.neo-skills-compact .neo-library-header {
+  padding-bottom: 24px;
+}
+.neo-compact-procedures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  grid-auto-rows: 1fr;
+  gap: 16px;
+}
+.neo-compact-procedures .neo-skill-card-body > div:first-child {
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+.neo-compact-procedures .neo-skill-card-body > div:first-child h3 {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+.neo-compact-procedures .neo-skill-card-body > div:first-child code {
+  grid-column: 2;
+  grid-row: 1;
+}
+@media (max-width: 1100px) {
+  .neo-compact-procedures {
+    grid-template-columns: 1fr;
+  }
+}
+.neo-compact-procedures .neo-skill-card-body {
+  flex: 1;
+  padding: 16px 20px;
+}
+.neo-compact-procedures .neo-skill-icon {
+  width: 32px;
+  height: 32px;
+  flex: none;
+}
+.neo-compact-procedures h3 {
+  margin: 0;
+  font-size: var(--type-body);
+}
+.neo-compact-procedures .neo-skill-description {
+  margin-top: 10px;
+  line-height: 1.6;
+}
+.neo-compact-procedures .neo-skill-actions {
+  margin-top: auto;
+  padding-top: 16px;
+}
+.neo-compact-procedures .neo-skill-actions button {
+  min-height: 36px;
+  height: auto;
+  padding: 8px 12px;
+  gap: 8px;
+  line-height: 20px;
+  border-radius: 6px;
+}
+.neo-compact-procedures .neo-skill-actions button svg {
+  flex-shrink: 0;
+}
+@media (max-width: 640px) {
+  .neo-compact-procedures .neo-skill-card-body {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 1100px) and (min-width: 701px) {
+  .neo-compact-procedures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* A single surface anchors the agent header, navigation and working area. */
+.agent-detail-panel {
+  border: 1px solid var(--pi-line);
+  border-radius: 12px;
+  background: hsl(var(--background));
+  overflow: hidden;
+  box-shadow: 0 2px 8px #10284004;
+}
+.agent-detail-panel .agent-detail-header {
+  padding: 28px 32px;
+  margin: 0;
+  background: var(--pi-surface-panel, hsl(var(--background)));
+  border-bottom: 1px solid var(--pi-line);
+}
+.agent-detail-header h1 {
+  margin-top: 10px;
+}
+.agent-detail-nav {
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--pi-line);
+}
+.agent-detail-body {
+  padding: 24px 32px 32px;
+}
+/* Agent setup is one screen inside the agent's panel (4 Nov 2026): no box
+   of its own, no step bar; sections set apart by space, one footer rule. */
+.agent-setup {
+  max-width: 720px;
+}
+.agent-setup-list {
+  border: 1px solid var(--pi-line);
+  border-radius: 8px;
+  max-height: 320px;
+  overflow: auto;
+}
+.agent-setup-list > li + li {
+  border-top: 1px solid var(--pi-line);
+}
+.agent-setup-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 32px;
+  padding: 16px 0;
+  border-top: 1px solid var(--pi-line);
+  background: hsl(var(--background));
+}
+.agent-review-list {
+  margin: 20px 0;
+  font-size: var(--type-small);
+}
+.agent-review-list > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--pi-line);
+}
+.agent-review-list dt {
+  color: var(--pi-body);
+}
+@media (max-width: 640px) {
+  .agent-detail-panel .agent-detail-header,
+  .agent-detail-body {
+    padding: 20px 16px;
+  }
+  .agent-detail-nav {
+    padding: 12px;
+  }
+}
+
+.collection-source-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+}
+@media (max-width: 640px) {
+  .collection-source-row {
+    gap: 8px;
+    padding: 12px;
+    flex-wrap: wrap;
+  }
+  .collection-source-row > div {
+    flex-basis: calc(100% - 48px);
+  }
+}

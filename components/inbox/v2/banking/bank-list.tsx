@@ -1,0 +1,610 @@
+import React, { useMemo, useRef, useState } from "react";
+import {
+  ArrowLeftRight,
+  CircleAlert,
+  Eye,
+  Landmark,
+  MoreHorizontal,
+  MoreVertical,
+  Undo2,
+  Upload,
+} from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import OverlayScrollbars from "@/components/common/overlay-scrollbars";
+import { Tooltip } from "@/components/common/tooltip";
+import { cn } from "@/lib/utils";
+import { useColumnResize } from "@/hooks/pages/inbox/use-column-resize";
+import usePinEdges from "@/hooks/pages/inbox/use-pin-edges";
+import { isCashLedger } from "@/hooks/pages/inbox/use-banking";
+import type { BankLedgerData } from "@/types/pages/inbox/banking";
+import { ColumnFilter, QuickFilter } from "@/components/inbox/v2/filter-panel";
+import {
+  ColumnsMenu,
+  useColumnLayout,
+  type ColumnSpec,
+} from "@/components/inbox/v2/columns-menu";
+import {
+  ACTIONS_WIDTH,
+  SELECT_WIDTH,
+} from "@/components/inbox/v2/table-sizing";
+import { T } from "@/components/inbox/v2/ui";
+import { BANK_LIST_SIZES } from "./table-sizing";
+import {
+  CellBox,
+  EmptyBlock,
+  HEADER_CLASS,
+  HeaderCell,
+  Pager,
+  SearchBox,
+  TABLE_CLASS,
+  nextSort,
+  sortRows,
+  type SortState,
+} from "./table-parts";
+import {
+  DotChip,
+  KpiCard,
+  KpiRow,
+  PAGE_SCROLL,
+  PageHead,
+  Pinned,
+  ROW_GROUND,
+  TOOLBAR,
+  TableCard,
+  ToolbarRule,
+} from "./page-parts";
+
+/**
+ * Banking's landing screen: every bank, card and cash ledger in ERP, and
+ * how many of each one's transactions still need review.
+ *
+ * Production: components/bank/index.tsx and components/bank/table/*. The
+ * Account Aggregator pieces (Connect Bank, fetch balance, data-fetch
+ * activity) are left out of this prototype.
+ */
+
+type ColumnKey =
+  "ledgerName" | "accountType" | "bankName" | "unreconciledCount";
+/*
+  Figma's columns (28 Oct 2026): Sr No. | Bank Ledger | Account Type | Bank |
+  Unreconciled, every one in the Columns menu. Bank Ledger names the row, so
+  it cannot be hidden.
+*/
+const COLUMNS: ColumnSpec[] = [
+  { key: "srNo", label: "Sr No." },
+  { key: "ledgerName", label: "Bank Ledger", locked: true },
+  { key: "accountType", label: "Account Type" },
+  { key: "bankName", label: "Bank" },
+  { key: "unreconciledCount", label: "Unreconciled" },
+];
+
+const NOT_MAPPED = "Not mapped";
+/** production's getAccountTypeDisplay */
+const TYPE_LABEL: Record<string, string> = {
+  bank: "Bank",
+  credit_card: "Credit Card",
+};
+const typeOf = (ledger: BankLedgerData) =>
+  TYPE_LABEL[ledger.accountType] ?? NOT_MAPPED;
+const bankOf = (ledger: BankLedgerData) => ledger.bankName || NOT_MAPPED;
+
+const SORT_VALUE: Partial<
+  Record<ColumnKey, (ledger: BankLedgerData) => string | number>
+> = {
+  ledgerName: (l) => l.ledgerName,
+  accountType: (l) => (isCashLedger(l) ? "" : typeOf(l)),
+  bankName: (l) => (isCashLedger(l) ? "" : bankOf(l)),
+  unreconciledCount: (l) => l.unreconciledCount,
+};
+
+type Props = {
+  ledgers: BankLedgerData[];
+  onOpen: (ledger: BankLedgerData) => void;
+  onUpload: (ledger?: BankLedgerData) => void;
+  onLogs: (ledger?: BankLedgerData) => void;
+  notify: (message: string, kind?: "success" | "error" | "info") => void;
+};
+
+const BankList = ({
+  ledgers,
+  onOpen,
+  onUpload,
+  onLogs,
+  notify,
+}: Props) => {
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(25);
+  const [sort, setSort] = useState<SortState<ColumnKey>>(null);
+  const [names, setNames] = useState<string[]>([]);
+  const [types, setTypes] = useState<string[]>([]);
+  const [banks, setBanks] = useState<string[]>([]);
+
+  const options = (values: string[]) =>
+    [...new Set(values)].sort().map((value) => ({ value, label: value }));
+  const nameOptions = useMemo(
+    () => options(ledgers.map((l) => l.ledgerName)),
+    [ledgers]
+  );
+  const typeOptions = useMemo(
+    () => options(ledgers.filter((l) => !isCashLedger(l)).map(typeOf)),
+    [ledgers]
+  );
+  const bankOptions = useMemo(
+    () => options(ledgers.filter((l) => !isCashLedger(l)).map(bankOf)),
+    [ledgers]
+  );
+
+  const rows = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    const filtered = ledgers.filter(
+      (l) =>
+        (!term || l.ledgerName.toLowerCase().includes(term)) &&
+        (!names.length || names.includes(l.ledgerName)) &&
+        (!types.length || (!isCashLedger(l) && types.includes(typeOf(l)))) &&
+        (!banks.length || (!isCashLedger(l) && banks.includes(bankOf(l))))
+    );
+    return sortRows(filtered, sort, SORT_VALUE);
+  }, [ledgers, search, names, types, banks, sort]);
+  const pageRows = rows.slice(page * pageSize, (page + 1) * pageSize);
+
+  const layout = useColumnLayout("bank.list", COLUMNS);
+  const shown = layout.shown;
+  const resize = useColumnResize({
+    shown,
+    sizes: BANK_LIST_SIZES,
+    storageKey: "banking.list.widths.v1",
+  });
+  // The resize hook reserves SELECT_WIDTH for a checkbox this table does not
+  // have. Sr No. draws it; with Sr No. hidden, the first column takes it, so
+  // the columns still add up to the table's width.
+  const extraFor = (key: string) =>
+    key === (shown.includes("srNo") ? "srNo" : shown[0]) ? SELECT_WIDTH : 0;
+  // The page scroller; it owns the horizontal scroll the pinned Actions
+  // column shades against.
+  const scroller = useRef<HTMLDivElement | null>(null);
+  const pinEdges = usePinEdges(scroller);
+
+  const anyFilter = !!(search || names.length || types.length || banks.length);
+  const reset = () => {
+    setSearch("");
+    setNames([]);
+    setTypes([]);
+    setBanks([]);
+    setPage(0);
+  };
+  const filterFor = (key: ColumnKey) => {
+    const set = (fn: (next: string[]) => void) => (next: string[]) => {
+      fn(next);
+      setPage(0);
+    };
+    if (key === "ledgerName")
+      return (
+        <ColumnFilter
+          label="Bank Ledger"
+          options={nameOptions}
+          selected={names}
+          onChange={set(setNames)}
+        />
+      );
+    if (key === "accountType")
+      return (
+        <ColumnFilter
+          label="Account Type"
+          options={typeOptions}
+          selected={types}
+          onChange={set(setTypes)}
+        />
+      );
+    if (key === "bankName")
+      return (
+        <ColumnFilter
+          label="Bank"
+          options={bankOptions}
+          selected={banks}
+          onChange={set(setBanks)}
+        />
+      );
+    return undefined;
+  };
+  const activeFor = (key: ColumnKey) =>
+    key === "ledgerName"
+      ? !!names.length
+      : key === "accountType"
+        ? !!types.length
+        : key === "bankName"
+          ? !!banks.length
+          : false;
+
+  const cell = (key: ColumnKey, ledger: BankLedgerData) => {
+    const cash = isCashLedger(ledger);
+    const dash = <span className="text-pi-faint">-</span>;
+    switch (key) {
+      case "ledgerName":
+        return (
+          <>
+            <span
+              className="truncate font-medium text-pi-ink"
+              title={ledger.ledgerName}
+            >
+              {ledger.ledgerName}
+            </span>
+            {ledger.accountParent ? (
+              <span
+                className={cn(T.sub, "truncate")}
+                title={ledger.accountParent}
+              >
+                {ledger.accountParent}
+              </span>
+            ) : null}
+          </>
+        );
+      case "accountType":
+        if (cash) return dash;
+        return ledger.accountType ? (
+          <span className="truncate">{typeOf(ledger)}</span>
+        ) : (
+          <DotChip tone="warn" className="-ml-2">
+            {NOT_MAPPED}
+          </DotChip>
+        );
+      case "bankName":
+        if (cash) return dash;
+        return ledger.bankName ? (
+          <span className="truncate" title={ledger.bankName}>
+            {bankOf(ledger)}
+          </span>
+        ) : (
+          <DotChip tone="warn" className="-ml-2">
+            {NOT_MAPPED}
+          </DotChip>
+        );
+      case "unreconciledCount": {
+        const count = ledger.unreconciledCount;
+        return count > 0 ? (
+          <DotChip tone="warn" className="-ml-2">
+            <span className="fig">{count}</span>{" "}
+            {count === 1 ? "Transaction" : "Transactions"}
+          </DotChip>
+        ) : (
+          dash
+        );
+      }
+    }
+  };
+
+  // Read-only KPIs from the ledgers already on screen.
+  const accounts = ledgers.filter((l) => !isCashLedger(l));
+  const unreconciled = accounts.reduce((n, l) => n + l.unreconciledCount, 0);
+  const waiting = accounts.filter((l) => l.unreconciledCount > 0).length;
+  const unmapped = accounts.filter((l) => !l.accountType || !l.bankName).length;
+
+  return (
+    <>
+      {/* The scroller's own box, so the overlay bars sit over the table and
+          end above the pager. */}
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
+    <div ref={scroller} className={PAGE_SCROLL} {...pinEdges}>
+      <Pinned>
+        <PageHead
+          eyebrow="Banking"
+          title="Bank accounts"
+          actions={
+            <>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    aria-label="More actions"
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onSelect={() => onLogs()}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    Statement Logs
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button onClick={() => onUpload()}>
+                <Upload className="h-4 w-4" />
+                Upload Statement
+              </Button>
+            </>
+          }
+        />
+
+        <KpiRow>
+          <KpiCard
+            icon={ArrowLeftRight}
+            label="Unreconciled"
+            value={unreconciled}
+            unit={unreconciled === 1 ? "transaction" : "transactions"}
+            meta={
+              waiting
+                ? `Across ${waiting} account${waiting === 1 ? "" : "s"}`
+                : "Every account is reconciled"
+            }
+          />
+          <KpiCard
+            icon={Landmark}
+            label="Bank and card accounts"
+            value={accounts.length}
+            unit={accounts.length === 1 ? "account" : "accounts"}
+            meta={`${ledgers.length - accounts.length} cash ledger${ledgers.length - accounts.length === 1 ? "" : "s"} alongside`}
+          />
+          <KpiCard
+            icon={CircleAlert}
+            label="Not mapped"
+            value={unmapped}
+            unit={unmapped === 1 ? "account" : "accounts"}
+            meta={
+              unmapped
+                ? "Set the account type and bank to upload"
+                : "Every account is mapped"
+            }
+          />
+        </KpiRow>
+
+        <div className={cn(TOOLBAR, "pt-0")}>
+          <SearchBox
+            label="Search ledgers"
+            placeholder="Search ledgers..."
+            value={search}
+            onChange={(value) => {
+              setSearch(value);
+              setPage(0);
+            }}
+          />
+          <ToolbarRule />
+          {/* Figma leads with Bank Ledger (28 Oct 2026); it shares the
+              column filter's selection. */}
+          <QuickFilter
+            label="Bank Ledger"
+            options={nameOptions}
+            selected={names}
+            onChange={(next) => {
+              setNames(next);
+              setPage(0);
+            }}
+          />
+          <QuickFilter
+            label="Account Type"
+            options={typeOptions}
+            selected={types}
+            onChange={(next) => {
+              setTypes(next);
+              setPage(0);
+            }}
+          />
+          <QuickFilter
+            label="Bank"
+            options={bankOptions}
+            selected={banks}
+            onChange={(next) => {
+              setBanks(next);
+              setPage(0);
+            }}
+          />
+          <span className="flex-1" />
+          {anyFilter && (
+            <Button variant="ghost" onClick={reset}>
+              <Undo2 className="h-3 w-3" />
+              Reset Filters
+            </Button>
+          )}
+          <ColumnsMenu
+            layout={layout}
+            onResetWidths={resize.resetWidths}
+            pinnable={false}
+          />
+        </div>
+      </Pinned>
+
+      <TableCard>
+        <div ref={resize.gridRef} className="min-w-0 flex-1">
+          <Table style={{ width: resize.tableWidth }} className={TABLE_CLASS}>
+            <TableHeader className={HEADER_CLASS}>
+              <TableRow>
+                {shown.map((key) =>
+                  key === "srNo" ? (
+                    <HeaderCell
+                      key={key}
+                      columnKey={key}
+                      label={layout.label(key)}
+                      sizes={BANK_LIST_SIZES}
+                      resize={resize}
+                      extraWidth={extraFor(key)}
+                      resizable={false}
+                    />
+                  ) : (
+                    <HeaderCell
+                      key={key}
+                      columnKey={key}
+                      label={layout.label(key)}
+                      sizes={BANK_LIST_SIZES}
+                      resize={resize}
+                      extraWidth={extraFor(key)}
+                      sort={sort?.key === key ? sort.dir : "none"}
+                      onSort={() => {
+                        setSort((current) => nextSort(current, key as ColumnKey));
+                        setPage(0);
+                      }}
+                      filter={filterFor(key as ColumnKey)}
+                      filterActive={activeFor(key as ColumnKey)}
+                    />
+                  )
+                )}
+                <TableHead
+                  style={{ width: ACTIONS_WIDTH }}
+                  className="pin-edge-r sticky right-0 z-10 h-row-header bg-pi-head-bg px-3 py-0 align-middle"
+                >
+                  <span
+                    className={cn(T.head, "flex h-4 items-center truncate")}
+                  >
+                    Actions
+                  </span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pageRows.map((ledger, index) => {
+                const cash = isCashLedger(ledger);
+                return (
+                  <TableRow
+                    key={ledger.id}
+                    // A cash ledger opens its cash book (4 Nov 2026): vouchers
+                    // typed in, no statement.
+                    onClick={() => onOpen(ledger)}
+                    className="group cursor-pointer hover:bg-transparent"
+                  >
+                    {shown.map((key) =>
+                      key === "srNo" ? (
+                        <TableCell
+                          key={key}
+                          className={cn(
+                            "h-row px-4 py-0 align-middle tabular-nums",
+                            T.cell,
+                            "text-pi-faint",
+                            ROW_GROUND
+                          )}
+                        >
+                          {page * pageSize + index + 1}
+                        </TableCell>
+                      ) : (
+                        <TableCell
+                          key={key}
+                          className={cn(
+                            "h-row overflow-hidden px-4 py-0 align-middle",
+                            T.cell,
+                            // Body ink; the ledger name carries its own.
+                            "text-pi-body",
+                            ROW_GROUND
+                          )}
+                        >
+                          <CellBox>{cell(key as ColumnKey, ledger)}</CellBox>
+                        </TableCell>
+                      )
+                    )}
+                    <TableCell
+                      onClick={(e) => e.stopPropagation()}
+                      className={cn(
+                        "pin-edge-r sticky right-0 z-[1] h-row bg-background px-2 py-0 align-middle",
+                        ROW_GROUND
+                      )}
+                    >
+                      <div className="flex items-center gap-1">
+                        <Tooltip message="Upload Statement">
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={`Upload statement for ${ledger.ledgerName}`}
+                            className={cn("w-7", cash && "text-pi-faint")}
+                            onClick={() =>
+                              cash
+                                ? notify(
+                                    "Statement upload works only for bank ledgers. Cash ledgers do not have statements.",
+                                    "info"
+                                  )
+                                : onUpload(ledger)
+                            }
+                          >
+                            <Upload className="h-4 w-4" />
+                          </Button>
+                        </Tooltip>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              aria-label={`More actions for ${ledger.ledgerName}`}
+                              className="w-7 text-pi-faint hover:text-pi-ink"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            align="end"
+                            className="w-[180px]"
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
+                          >
+                            {/* What a click on the row does (28 Oct 2026,
+                                Figma). A cash ledger's is its cash book. */}
+                            <DropdownMenuItem onSelect={() => onOpen(ledger)}>
+                              <ArrowLeftRight className="mr-2 h-4 w-4" />
+                              {cash ? "Open Cash Book" : "View Transactions"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => onLogs(ledger)}>
+                              <Eye className="mr-2 h-4 w-4" />
+                              View Logs
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+          {!pageRows.length && (
+            <EmptyBlock
+              {...(anyFilter
+                ? {
+                    title: "No accounts match these filters",
+                    body: "Clear the search or filters to see every bank and cash ledger.",
+                    filters: search.trim()
+                      ? [{ label: `Search: “${search.trim()}”` }]
+                      : [],
+                    onClear: reset,
+                  }
+                : {
+                    icon: Landmark,
+                    title: "No bank or cash accounts yet",
+                    body: "Upload a statement and AI Accountant reads the account from it, then lists its transactions for review.",
+                    actions: (
+                      <Button onClick={() => onUpload()}>
+                        <Upload className="h-4 w-4" />
+                        Upload Statement
+                      </Button>
+                    ),
+                  })}
+            />
+          )}
+        </div>
+      </TableCard>
+    </div>
+        <OverlayScrollbars scroller={scroller} />
+      </div>
+
+      {/* Below the page scroller, not inside it: the pager stays at the
+          bottom of the viewport, and the horizontal bar ends above it. */}
+      <Pager
+        page={page}
+        pageSize={pageSize}
+        total={rows.length}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+      />
+    </>
+  );
+};
+
+export default BankList;
