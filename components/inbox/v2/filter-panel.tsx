@@ -56,7 +56,9 @@ export const FilterPanel = ({
   const [query, setQuery] = useState("");
   const [find, setFind] = useState("");
   const active = categories.find((c) => c.id === activeId) ?? categories[0];
-  const applied = categories.filter((c) => c.activeCount).length;
+  const applied = categories.filter(
+    (c) => (c.activeCount ?? c.selected?.length ?? 0) > 0
+  ).length;
   const listed = find.trim()
     ? categories.filter((c) =>
         c.label.toLowerCase().includes(find.trim().toLowerCase())
@@ -87,23 +89,27 @@ export const FilterPanel = ({
 
   return (
     <div
+      data-slot="filter-panel"
       className={cn(
         "flex h-[480px] max-h-[calc(100vh-96px)] w-[680px] max-w-[calc(100vw-32px)] overflow-hidden",
         className
       )}
     >
-      <div className="flex w-[212px] flex-none flex-col border-r border-pi-line">
+      <div
+        data-slot="filter-categories"
+        className="flex w-[212px] flex-none flex-col border-r border-pi-line"
+      >
         <h2 className="flex h-14 flex-none items-center px-4 text-lead font-semibold text-pi-ink">
           Filters
         </h2>
-        <div className="relative flex-none border-b border-pi-line">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-pi-faint" />
+        <div className="relative mx-2 mb-2 flex-none overflow-hidden rounded-sm border border-pi-line bg-background">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-pi-faint" />
           <input
             aria-label="Search filters"
             placeholder="Search filters"
             value={find}
             onChange={(e) => setFind(e.target.value)}
-            className="h-10 w-full bg-transparent pl-10 pr-4 text-small text-pi-ink outline-none placeholder:text-pi-faint"
+            className="h-9 w-full bg-transparent pl-9 pr-3 text-small text-pi-ink outline-none placeholder:text-pi-faint"
           />
         </div>
         <div className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto p-2">
@@ -148,7 +154,7 @@ export const FilterPanel = ({
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div data-slot="filter-options" className="flex min-w-0 flex-1 flex-col">
         <h3 className="flex h-14 flex-none items-center px-4 text-lead font-semibold text-pi-ink">
           {active?.label}
         </h3>
@@ -173,6 +179,7 @@ export const FilterPanel = ({
                 {visible.length ? (
                   visible.map((o) => (
                     <Label
+                      data-selected={(active?.selected ?? []).includes(o.value)}
                       key={o.value}
                       className="flex h-9 flex-none cursor-pointer items-center gap-3 rounded-sm px-2 text-small font-normal text-pi-ink hover:bg-pi-fill"
                     >

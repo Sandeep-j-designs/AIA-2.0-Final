@@ -316,6 +316,8 @@ html[data-neo-open] [data-sonner-toaster][data-y-position="bottom"] {
 
 /* Neo home and skill library: navy surfaces, generous spacing, quiet detail. */
 .neo-skills-scroll {
+  container-type: inline-size;
+  min-width: 0;
   background: var(--pi-page, #f3f6fa);
 }
 .neo-skills-content {
@@ -472,7 +474,7 @@ html[data-neo-open] [data-sonner-toaster][data-y-position="bottom"] {
 }
 .neo-skill-card:hover {
   border-color: var(--pi-line-strong);
-  box-shadow: 0 6px 24px #10284008;
+  box-shadow: 0 6px 24px rgb(var(--shadow-rgb) / 3%);
 }
 .neo-skill-card-body {
   display: flex;
@@ -613,7 +615,7 @@ html[data-neo-open] [data-sonner-toaster][data-y-position="bottom"] {
   margin-top: 32px;
   border-radius: var(--radius-md, 8px);
   background: hsl(var(--background));
-  box-shadow: 0 12px 36px #10284008;
+  box-shadow: 0 12px 36px rgb(var(--shadow-rgb) / 3%);
   text-align: left;
 }
 .neo-home-prompts {
@@ -864,18 +866,19 @@ html[data-neo-open] [data-sonner-toaster][data-y-position="bottom"] {
 
 /* Skills use only the space their content needs. */
 .neo-skills-content.neo-skills-compact {
-  max-width: 1120px;
-  margin-left: 0;
-  margin-right: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 24px 24px 40px;
 }
 .neo-skills-compact .neo-library-header {
   padding-bottom: 24px;
 }
 .neo-compact-procedures {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
-  grid-auto-rows: 1fr;
+  grid-auto-rows: auto;
   gap: 16px;
 }
 .neo-compact-procedures .neo-skill-card-body > div:first-child {
@@ -890,11 +893,7 @@ html[data-neo-open] [data-sonner-toaster][data-y-position="bottom"] {
   grid-column: 2;
   grid-row: 1;
 }
-@media (max-width: 1100px) {
-  .neo-compact-procedures {
-    grid-template-columns: 1fr;
-  }
-}
+
 .neo-compact-procedures .neo-skill-card-body {
   flex: 1;
   padding: 16px 20px;
@@ -933,19 +932,13 @@ html[data-neo-open] [data-sonner-toaster][data-y-position="bottom"] {
   }
 }
 
-@media (max-width: 1100px) and (min-width: 701px) {
-  .neo-compact-procedures {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 /* A single surface anchors the agent header, navigation and working area. */
 .agent-detail-panel {
   border: 1px solid var(--pi-line);
   border-radius: 12px;
   background: hsl(var(--background));
   overflow: hidden;
-  box-shadow: 0 2px 8px #10284004;
+  box-shadow: 0 2px 8px rgb(var(--shadow-rgb) / 2%);
 }
 .agent-detail-panel .agent-detail-header {
   padding: 28px 32px;
@@ -1029,4 +1022,69 @@ html[data-neo-open] [data-sonner-toaster][data-y-position="bottom"] {
   .collection-source-row > div {
     flex-basis: calc(100% - 48px);
   }
+}
+
+/* Skills respond to their workspace, including either sidebar state. */
+@container (min-width: 640px) {
+  .neo-compact-procedures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container (min-width: 960px) {
+  .neo-compact-procedures {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@container (max-width: 480px) {
+  .neo-skills-content.neo-skills-compact {
+    padding: 20px 16px 32px;
+  }
+}
+.neo-compact-procedures .neo-skill-card,
+.neo-compact-procedures .neo-skill-card-body {
+  min-width: 0;
+}
+.neo-compact-procedures .neo-skill-description {
+  overflow-wrap: anywhere;
+}
+
+/* Setup summaries keep defaults readable without requiring a settings tour. */
+.agent-setup-disclosure {
+  border: 1px solid var(--pi-line);
+  border-radius: 10px;
+  padding: 16px;
+}
+.agent-setup-disclosure > summary {
+  position: relative;
+  padding-right: 24px;
+  cursor: pointer;
+  list-style: none;
+}
+.agent-setup-disclosure > summary::-webkit-details-marker { display: none; }
+.agent-setup-disclosure > summary::after {
+  content: "";
+  position: absolute;
+  right: 3px;
+  top: 5px;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--pi-body);
+  border-bottom: 1.5px solid var(--pi-body);
+  transform: rotate(45deg);
+}
+.agent-setup-disclosure[open] > summary::after { transform: rotate(225deg); top: 9px; }
+.agent-setup-disclosure > summary:focus-visible {
+  outline: 1px solid var(--pi-body);
+  outline-offset: 5px;
+  border-radius: 4px;
+}
+.collection-source-row { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(120px, 200px) auto; }
+.collection-source-row > label { overflow-wrap: anywhere; }
+.collection-source-row > button[role="switch"] { grid-column: 4; }
+.collection-source-scope { width: 100%; min-width: 0; }
+@container (max-width: 720px) {
+  .collection-source-row { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .collection-source-row > button[role="switch"] { grid-column: 3; grid-row: 1; }
+  .collection-source-scope { grid-column: 2 / -1; grid-row: 2; }
+  .agent-setup-disclosure .sm\:grid-cols-2 { grid-template-columns: minmax(0, 1fr); }
 }

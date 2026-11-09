@@ -300,6 +300,7 @@ const TransactionsTable = ({
 
   const allOnPage =
     !!rows.length && rows.every((x) => selected.includes(x.bankLineUuid));
+  const someOnPage = rows.some((x) => selected.includes(x.bankLineUuid));
 
   const cell = (key: TxnColumn, txn: BankTransaction) => {
     const editable = !ready && !locked(txn);
@@ -604,12 +605,15 @@ const TransactionsTable = ({
             >
               <Checkbox
                 aria-label="Select every transaction on this page"
-                checked={allOnPage}
-                onCheckedChange={(checked) =>
+                checked={allOnPage ? true : someOnPage ? "indeterminate" : false}
+                onCheckedChange={() => {
+                  const ids = rows.map((x) => x.bankLineUuid);
                   onSelectedChange(
-                    checked ? rows.map((x) => x.bankLineUuid) : []
-                  )
-                }
+                    someOnPage
+                      ? selected.filter((id) => !ids.includes(id))
+                      : Array.from(new Set([...selected, ...ids]))
+                  );
+                }}
               />
             </TableHead>
             {shown.map((key) => (

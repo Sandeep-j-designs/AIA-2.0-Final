@@ -452,7 +452,7 @@ html :is(.ap-sheet, .ar-sheet, .jv-form) .cr-items-head h3 span {
 }
 
 html :is(.ap-sheet, .ar-sheet, .jv-form) .cr-grid-wrap {
-  box-shadow: 0 2px 3px -2px rgb(20 32 60 / 0.06);
+  box-shadow: 0 2px 3px -2px rgb(var(--shadow-rgb) / 0.06);
 }
 
 html :is(.ap-sheet, .ar-sheet, .jv-form) .cr-table th {
@@ -463,7 +463,7 @@ html :is(.ap-sheet, .ar-sheet, .jv-form) .cr-table th {
 
 html :is(.ap-sheet, .ar-sheet, .jv-form) .cr-totals {
   overflow: hidden;
-  box-shadow: 0 2px 3px -2px rgb(20 32 60 / 0.06);
+  box-shadow: 0 2px 3px -2px rgb(var(--shadow-rgb) / 0.06);
 }
 
 html
@@ -609,7 +609,7 @@ html :is(.ap-sheet, .ar-sheet, .jv-form) .cr-tip {
   font-size: var(--type-caption);
   line-height: 16px;
   color: var(--pi-surface-panel);
-  box-shadow: 0 4px 12px rgb(17 27 52 / 0.16);
+  box-shadow: 0 4px 12px rgb(var(--shadow-rgb) / 0.16);
   pointer-events: none;
 }
 html :is(.ap-sheet, .ar-sheet, .jv-form) .cr-tip[hidden] {

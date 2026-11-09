@@ -43,10 +43,15 @@ export default function AccountingAgent({
     escalation: "7",
     notes: "",
   });
+  const [savedPlan, setSavedPlan] = useState<Plan | null>(null);
   const [saved, setSaved] = useState(false);
   const [notice, setNotice] = useState("");
   const key = `aia.agent-plan.v1.${company}.${agentId}`;
   useEffect(() => {
+    setPlan({ owner: actor, cadence: "Every weekday", escalation: "7", notes: "" });
+    setSavedPlan(null);
+    setSaved(false);
+    setNotice("");
     try {
       const raw = localStorage.getItem(key);
       if (raw) {
@@ -59,6 +64,7 @@ export default function AccountingAgent({
         )
           throw Error();
         setPlan(p);
+        setSavedPlan(p);
         setSaved(true);
       }
     } catch {
@@ -94,7 +100,6 @@ export default function AccountingAgent({
     agentId === "missing-documents" || agentId === "receivables-follow-up";
   const update = (patch: Partial<Plan>) => {
     setPlan({ ...plan, ...patch });
-    setSaved(false);
     setNotice("");
   };
   return (
@@ -195,13 +200,18 @@ export default function AccountingAgent({
                 plan={plan}
                 saved={saved}
                 onChange={update}
-                onCancel={() => setTab("Overview")}
+                onCancel={() => {
+                  setPlan(savedPlan || { owner: actor, cadence: "Every weekday", escalation: "7", notes: "" });
+                  setNotice("");
+                  setTab("Overview");
+                }}
                 onSave={() => {
                   try {
                     localStorage.setItem(key, JSON.stringify(plan));
                     setSaved(true);
+                    setSavedPlan({ ...plan });
                     setNotice(
-                      "Turned on. In this prototype it doesn't run on its own yet."
+                      "Setup saved. You can review current work; scheduled runs are not connected in this prototype."
                     );
                     setTab("Overview");
                   } catch {

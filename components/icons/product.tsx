@@ -1,71 +1,90 @@
 import * as React from "react";
 import { make } from "./core";
 
-/** Ledger product family: 24-unit grid, 2-unit strokes, open interiors.
- * No shading or micro-detail: recognition must survive at 16px.
- * Money arrows are relative to the business (out/up, in/down).
- * Use the same semantic export in navigation, notifications and workflows.
+/** AIA Quiet: original 20-unit drawings, 1.5-unit strokes, 2.5-unit safe area.
+ * Open interiors, rounded terminals, no decorative shading. Scale to 16–24px.
+ * Receipt arrows describe document direction: purchase inward, sale outward.
+ * State is expressed through color and surrounding surfaces, never stroke weight.
  */
-export const Overview = make(
+const icon = (name: string, glyph: React.ReactNode) => make(name, glyph, 20);
+export const Overview = icon(
   "Overview",
   <>
-    <rect x="4" y="4" width="16" height="16" rx="2" />
-    <path d="M4 10h16M10 10v10" />
+    <rect x="3" y="3" width="5" height="5" rx="1.25" />
+    <rect x="12" y="3" width="5" height="5" rx="1.25" />
+    <rect x="3" y="12" width="5" height="5" rx="1.25" />
+    <rect x="12" y="12" width="5" height="5" rx="1.25" />
   </>
 );
-export const DocumentInbox = make(
+export const DocumentInbox = icon(
   "DocumentInbox",
   <>
-    <path d="M8 8V3h8v5M4 11l2-3h12l2 3v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z" />
-    <path d="M4 12h5l1 3h4l1-3h5" />
+    <path d="M6 10V3.5h8V10M8.5 6h3" />
+    <path d="M5.5 8H4l-1 4v4.5h14V12l-1-4h-1.5M3 12h4l1.5 2h3l1.5-2h4" />
   </>
 );
-const moneyBase = <path d="M4 12v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6M7 16h3" />;
-export const Payables = make(
+const receipt = (
+  <path d="M11 3H4.5v14l2-1.5 2 1.5 2-1.5 2 1.5V12M7 6h2M7 9h2" />
+);
+export const Payables = icon(
   "Payables",
   <>
-    {moneyBase}
-    <path d="M12 13V3M8 7l4-4 4 4" />
+    {receipt}
+    <path d="M17 6h-5m2.5-2.5L12 6l2.5 2.5" />
   </>
 );
-export const Receivables = make(
+export const Receivables = icon(
   "Receivables",
   <>
-    {moneyBase}
-    <path d="M12 3v10M8 9l4 4 4-4" />
+    {receipt}
+    <path d="M12 6h5m-2.5-2.5L17 6l-2.5 2.5" />
   </>
 );
-export const Accounting = make(
+export const Accounting = icon(
   "Accounting",
   <>
-    <rect x="4" y="3" width="16" height="18" rx="2" />
-    <path d="M9 3v18M13 9h3M13 15h3" />
+    <path d="M10 5c-2-1.5-4.5-2-7-1.5v12c2.5-.5 5 0 7 1.5 2-1.5 4.5-2 7-1.5v-12c-2.5-.5-5 0-7 1.5Zm0 0v12" />
+    <path d="m5.5 7.5 2 .5m5 0 2-.5" />
   </>
 );
-export const Inventory = make(
+export const Inventory = icon(
   "Inventory",
   <>
-    <path d="m4 7 8-4 8 4v10l-8 4-8-4Z" />
-    <path d="m4 7 8 4 8-4M12 11v10" />
+    <path d="m3 6.5 7-3.5 7 3.5v7l-7 3.5-7-3.5Zm0 0 7 3.5 7-3.5M10 10v7M6.5 4.75l7 3.5" />
   </>
 );
-export const Compliance = make(
+export const Compliance = icon(
   "Compliance",
   <>
-    <path d="m12 3 8 3v6c0 4-4 7-8 9-4-2-8-5-8-9V6Z" />
-    <path d="m8 12 3 3 5-6" />
+    <path d="M10 2.75 16 5v5c0 3-2.5 5.5-6 7.25C6.5 15.5 4 13 4 10V5Z" />
+    <path d="m7.5 9.75 1.75 1.75 3.5-3.5" />
   </>
 );
-export const Banking = make(
+export const Banking = icon(
   "Banking",
   <>
-    <path d="m3 8 9-5 9 5ZM4 21h16M6 12v5M12 12v5M18 12v5" />
+    <path d="m3 6.5 7-3.75 7 3.75ZM6.5 9.5v4M13.5 9.5v4M4 16.5h12" />
   </>
 );
-export const Reconcile = make(
+export const Reconcile = icon(
   "Reconcile",
   <>
-    <path d="M4 7h16l-4-4M20 17H4l4 4" />
-    <path d="m9 12 2 2 4-4" />
+    <path d="M5.5 5A6 6 0 0 1 16 8m0-4v4h-4M14.5 15A6 6 0 0 1 4 12m0 4v-4h4" />
+  </>
+);
+export const TaxReconciliation = icon(
+  "TaxReconciliation",
+  <>
+    <path d="M6.5 4V2.75h10.75V14H16M3 6h10.75v11.25H3Z" />
+    <path d="m5.75 11.5 1.75 1.75 3.5-3.5" />
+  </>
+);
+export const AccountTree = icon(
+  "AccountTree",
+  <>
+    <rect x="9" y="3" width="8" height="3" rx="1" />
+    <rect x="9" y="8.5" width="8" height="3" rx="1" />
+    <rect x="9" y="14" width="8" height="3" rx="1" />
+    <path d="M3 4.5h3M4.5 4.5v11H9M4.5 10H9" />
   </>
 );

@@ -15,6 +15,8 @@ const EDGE = 4;
 const CORNER = 12;
 const MIN_THUMB = 32;
 const IDLE_MS = 900;
+/** A pause this long ends a wheel gesture, so the next one may pick its axis. */
+const GESTURE_MS = 140;
 
 /**
  * Thin scrollbars that float over the content instead of reserving a strip
@@ -27,6 +29,9 @@ const IDLE_MS = 900;
  * pointer events through to the rows; only the thumb takes them.
  */
 const OverlayScrollbars = ({ scroller, className }: Props) => {
+  const [frame, setFrame] = useState<{ top: number; height: number } | null>(
+    null
+  );
   const [x, setX] = useState<Thumb>(null);
   const [y, setY] = useState<Thumb>(null);
   const [hovered, setHovered] = useState(false);
@@ -37,6 +42,41 @@ const OverlayScrollbars = ({ scroller, className }: Props) => {
   const measure = useCallback(() => {
     const el = scroller.current;
     if (!el) return;
+    el.toggleAttribute("data-table-scrolled", el.scrollTop > 12);
+    // Keep table headers below the actual toolbar height, including wrapping.
+    if (el.classList.contains("table-scroller")) {
+      const toolbar = el.querySelector<HTMLElement>(":scope > .sticky");
+      el.style.setProperty(
+        "--table-toolbar-height",
+        `${toolbar?.offsetHeight ?? 0}px`
+      );
+    }
+    const table = el.querySelector<HTMLElement>(
+      ".table-region [data-slot='table']"
+    );
+    if (table) {
+      const viewport = el.getBoundingClientRect();
+      const bounds = table.getBoundingClientRect();
+      const toolbar = el.querySelector<HTMLElement>(":scope > .sticky");
+      const top = Math.max(
+        bounds.top,
+        viewport.top + (toolbar?.offsetHeight ?? 0) + 12
+      );
+      const bottom = Math.min(bounds.bottom, viewport.bottom);
+      const next = {
+        top: top - viewport.top,
+        height: Math.max(0, bottom - top),
+      };
+      setFrame((previous) =>
+        previous &&
+        Math.abs(previous.top - next.top) < 0.5 &&
+        Math.abs(previous.height - next.height) < 0.5
+          ? previous
+          : next
+      );
+    } else {
+      setFrame(null);
+    }
     const axis = (client: number, total: number, position: number): Thumb => {
       if (total - client < 1) return null;
       const track = client - EDGE * 2 - CORNER;
@@ -58,6 +98,43 @@ const OverlayScrollbars = ({ scroller, className }: Props) => {
 
   const bound = useRef<HTMLElement | null>(null);
   const unbind = useRef<(() => void) | null>(null);
+  /*
+    One axis per gesture (9 Nov 2026). A trackpad swipe is rarely straight, so
+    the table drifted diagonally. The first wheel event of a gesture picks the
+    axis it moves along most; until the gesture pauses, movement on the other
+    axis is dropped. Pinch-zoom (ctrl + wheel) is left alone.
+  */
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    let axis: "x" | "y" | null = null;
+    let timer: number | undefined;
+    const onWheel = (event: WheelEvent) => {
+      if (event.ctrlKey) return;
+      const unit =
+        event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? el.clientHeight : 1;
+      const dx = event.deltaX * unit;
+      const dy = event.deltaY * unit;
+      if (!dx && !dy) return;
+      if (!axis) axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        axis = null;
+      }, GESTURE_MS);
+      const off = axis === "x" ? dy : dx;
+      // Straight along the chosen axis: let the browser scroll natively.
+      if (!off) return;
+      event.preventDefault();
+      if (axis === "x") el.scrollLeft += dx;
+      else el.scrollTop += dy;
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      window.clearTimeout(timer);
+    };
+  }, [scroller]);
+
   useEffect(() => {
     // Every render of the owner: the content may have changed size.
     measure();
@@ -83,6 +160,8 @@ const OverlayScrollbars = ({ scroller, className }: Props) => {
         ? null
         : new ResizeObserver(measure);
     observer?.observe(el);
+    const toolbar = el.querySelector<HTMLElement>(":scope > .sticky");
+    if (toolbar) observer?.observe(toolbar);
     window.addEventListener("resize", measure);
     unbind.current = () => {
       el.removeEventListener("scroll", onScroll);
@@ -142,11 +221,19 @@ const OverlayScrollbars = ({ scroller, className }: Props) => {
 
   return (
     <div
+      data-slot="overlay-scrollbars"
       aria-hidden
       className={cn("pointer-events-none absolute inset-0 z-30", className)}
     >
+      {frame && frame.height > 0 && (
+        <div
+          data-slot="table-viewport-frame"
+          style={{ top: frame.top, height: frame.height }}
+        />
+      )}
       {x && (
         <div
+          data-scroll-axis="horizontal"
           className={cn(thumbClass, "h-1.5")}
           style={{ bottom: EDGE, left: EDGE + x.offset, width: x.size }}
           onPointerDown={drag("x")}
@@ -154,6 +241,7 @@ const OverlayScrollbars = ({ scroller, className }: Props) => {
       )}
       {y && (
         <div
+          data-scroll-axis="vertical"
           className={cn(thumbClass, "w-1.5")}
           style={{ right: EDGE, top: EDGE + y.offset, height: y.size }}
           onPointerDown={drag("y")}

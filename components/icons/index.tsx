@@ -1,7 +1,8 @@
 /**
  * AI Accountant "Ledger" icon set.
  *
- * - Drawn on a 24px grid with a 3px live-area margin and a 2 stroke.
+ * - Utility drawings use a 24-unit grid and 1.8-unit strokes (1.5px at 20px).
+ * - Product drawings use the AIA Quiet 20-unit family in product.tsx.
  * - Joins and caps are round. Shapes are built from geometric primitives only:
  *   straight lines, circles, arcs and 2px-radius rectangles.
  * - Documents carry ruled lines because the product works on ledgers.
@@ -67,31 +68,13 @@ export const NeedsYou = make(
     strokeWidth={1.9}
   />
 );
-/**
- * Lucide "sparkles", paths verbatim, drawn duotone (7 Oct 2026, user: the
- * single outline sparkle "looks very simple"): the main star carries a soft
- * fill of its own colour under the stroke, and the two plus accents stay
- * strokes. Same geometry in the engines' `#i-ai` symbol.
- */
+/** Single open four-point spark: the shared AIA Quiet intelligence mark. */
 export const SPARKLE_PATH =
-  "M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z";
-export const SPARKLE_ACCENTS = "M20 3v4M22 5h-4M4 17v2M5 18H3";
-export const Sparkle = make(
-  "Sparkle",
-  <>
-    <path d={SPARKLE_PATH} fill="currentColor" fillOpacity={0.22} />
-    <path d={SPARKLE_ACCENTS} />
-  </>
-);
+  "M12 3C12.8 8.4 15.6 11.2 21 12 15.6 12.8 12.8 15.6 12 21 11.2 15.6 8.4 12.8 3 12 8.4 11.2 11.2 8.4 12 3Z";
+export const SPARKLE_ACCENTS = "";
+export const Sparkle = make("Sparkle", <path d={SPARKLE_PATH} />);
+export const NeoStar = make("NeoStar", <path d={SPARKLE_PATH} />);
 export const Sparkles = Sparkle;
-/**
- * Neo's mark (19 Oct 2026): the sparkle's star, solid, without its accents.
- * Neo only — the duotone Sparkle stays the mark for a value the AI decided.
- */
-export const NeoStar = make(
-  "NeoStar",
-  <path d={SPARKLE_PATH} fill="currentColor" stroke="none" />
-);
 export const AiMark = Sparkle;
 
 /* Navigation -------------------------------------------------------------- */

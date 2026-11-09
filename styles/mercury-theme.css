@@ -1,0 +1,727 @@
+/* Mercury-inspired application theme. Kept separate from generated foundations.
+   Reference: demo.mercury.com/dashboard, inspected 5 November 2026.
+   Arcadia is not bundled; use a locally available neutral sans-serif. */
+:root:not(.dark) {
+  --foreground: 240 17% 14%;
+  --primary: 237 89% 65%;
+  --primary-hover: 237 70% 57%;
+  --primary-active: 237 60% 49%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 16% 95%;
+  --secondary-foreground: 240 12% 25%;
+  --muted: 240 16% 96%;
+  --muted-foreground: 240 6% 47%;
+  --accent: 240 16% 95%;
+  --accent-foreground: 240 17% 14%;
+  --border: 240 18% 92%;
+  --input: 240 15% 87%;
+  --ring: 237 89% 65%;
+  --section: 240 20% 99%;
+  --neutral-gray: 240 18% 92%;
+  --pi-page: #ffffff;
+  --pi-surface-panel: #ffffff;
+  --pi-sunken: #f0f0f5;
+  --pi-fill: #f0f0f5;
+  --pi-fill-2: #e8e8ef;
+  --pi-row-hover: #f7f7fb;
+  --pi-head-bg: #fafafb;
+  --pi-ink: #1e1e2a;
+  --pi-ink-2: #353545;
+  --pi-ink-3: #70707d;
+  --pi-body: #555565;
+  --pi-faint: #70707d;
+  --pi-line: #ededf3;
+  --pi-line-2: #dddde5;
+  --pi-line-strong: #b4b4c2;
+  --pi-rule-ledger: #dddde5;
+  --pi-brand: #595cf6;
+  --pi-brand-hover: #4649df;
+  --pi-brand-active: #383bc9;
+  --pi-brand-tint: #ededff;
+  --pi-brand-border: #d8d8ff;
+  --pi-brand-vivid: #595cf6;
+  --pi-btn-primary-edge: transparent;
+  --pi-btn-fill: #595cf6;
+  --pi-btn-fill-hover: #4649df;
+  --pi-btn-fill-active: #383bc9;
+  --pi-ai-ink: #595cf6;
+  --pi-teal: #595cf6;
+  --pi-teal-tint: #ededff;
+  --pi-teal-strong: #4649df;
+  --button-sheen: none;
+  --button-shadow-primary: none;
+  --button-shadow-neutral: none;
+  --shadow-table: none;
+  --shadow-contact: 0 1px 3px rgb(30 30 42 / 5%);
+  --shadow-1: 0 2px 8px rgb(30 30 42 / 8%);
+  --shadow-2: 0 8px 28px rgb(30 30 42 / 12%);
+  --aia-radius-large: 12px;
+  --aia-radius-xlarge: 16px;
+}
+html:not(.dark) .workbench-sidebar {
+  --nav-ink: #1e1e2a;
+  --nav-body: #555565;
+  --nav-faint: #70707d;
+  --nav-line: #ededf3;
+  --nav-hover: #f0f0f5;
+  --nav-active-bg: #ededf2;
+  --nav-active-edge: transparent;
+  --nav-active-ink: #1e1e2a;
+  --nav-active-rail: #595cf6;
+  --nav-tag-bg: #ededff;
+  --nav-tag-ink: #4649df;
+  background: #fafafb;
+  border-right: 1px solid #ededf3;
+}
+html:not(.dark) .workbench-sidebar img {
+  filter: brightness(0);
+  opacity: 0.8;
+}
+html:not(.dark) .workbench-sidebar nav a,
+html:not(.dark) .workbench-sidebar nav button {
+  box-shadow: none;
+}
+html:not(.dark) .ui-button {
+  border-radius: 999px;
+}
+
+html:not(.dark) .table-region thead th {
+  font-weight: 500;
+}
+html:not(.dark) .table-region tbody tr:hover > td {
+  background-color: var(--pi-row-hover);
+}
+
+/* Compact rail: a centered 36px target, quiet 18px glyphs, and an unread
+   indicator outside the drawing. Expanded navigation retains its own rhythm. */
+.workbench-sidebar[data-collapsed="true"] nav {
+  align-items: center;
+  padding-inline: 0;
+  padding-top: 12px;
+}
+.workbench-sidebar[data-collapsed="true"] nav > [role="group"] {
+  width: 36px;
+  gap: 4px;
+  margin-top: 12px;
+}
+.workbench-sidebar[data-collapsed="true"] nav > [role="group"]:first-child {
+  margin-top: 0;
+}
+.workbench-sidebar[data-collapsed="true"]
+  nav
+  > [role="group"]
+  > span[aria-hidden] {
+  display: none;
+}
+.workbench-sidebar[data-collapsed="true"] nav a,
+.workbench-sidebar[data-collapsed="true"] nav button {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+.workbench-sidebar[data-collapsed="true"] nav .aia-icon {
+  width: 18px;
+  height: 18px;
+}
+.workbench-sidebar[data-collapsed="true"] .nav-unread-dot {
+  width: 4px;
+  height: 4px;
+  top: 5px;
+  right: 4px;
+  box-shadow: none;
+}
+.workbench-sidebar[data-collapsed="true"] > div:last-child .aia-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Interaction contract: light-theme surfaces, with semantic danger retained.
+   Attribute hooks belong to primitives so portalled menus share the theme. */
+:root:not(.dark) {
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 17% 14%;
+  --card-foreground: 240 17% 14%;
+  --control-radius: 8px;
+  --control-focus: 0 0 0 3px rgb(89 92 246 / 16%);
+  --surface-shadow: 0 4px 20px rgb(30 30 42 / 9%), 0 1px 3px rgb(30 30 42 / 4%);
+}
+html:not(.dark) .ui-button {
+  gap: 6px;
+  background-image: none;
+  box-shadow: none;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+html:not(.dark)
+  .ui-button:is([data-variant="default"], [data-variant="primary"]):not(
+    [data-destructive="true"]
+  ) {
+  border-color: transparent;
+}
+html:not(.dark)
+  .ui-button[data-variant="secondary"]:not([data-destructive="true"]) {
+  background: var(--pi-fill);
+  color: var(--pi-ink-2);
+  border-color: transparent;
+}
+html:not(.dark)
+  .ui-button[data-variant="secondary"]:not([data-destructive="true"]):is(
+    :hover,
+    [data-state="open"]
+  ) {
+  background: var(--pi-fill-2);
+}
+html:not(.dark)
+  .ui-button:is([data-variant="ghost"], [data-variant="outline"]):not(
+    [data-destructive="true"]
+  ):is(:hover, [data-state="open"]) {
+  background: var(--pi-fill);
+  color: var(--pi-ink);
+}
+html:not(.dark)
+  .ui-button:not([data-destructive="true"]):is(
+    [data-variant="secondary"],
+    [data-variant="outline"],
+    [data-variant="ghost"]
+  ):active {
+  background: var(--pi-fill-2);
+  box-shadow: none;
+}
+html:not(.dark) .ui-button[data-size^="icon"] {
+  border-radius: var(--control-radius);
+}
+html:not(.dark) .ui-button[data-variant^="link"] {
+  border-radius: 0;
+}
+html:not(.dark) .ui-button:focus-visible {
+  outline: 2px solid var(--pi-faint);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+html:not(.dark) .ui-button:is(:disabled, [aria-disabled="true"]) {
+  opacity: 0.42;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+html:not(.dark) .ui-button[aria-busy="true"] {
+  opacity: 0.7;
+  cursor: progress;
+}
+html:not(.dark)
+  :is(
+    [data-slot="input"]:not(.border-0):not(.border-none),
+    [data-slot="textarea"]:not(.border-0):not(.border-none),
+    [data-slot="select-trigger"]
+  ) {
+  border-radius: var(--control-radius);
+  box-shadow: none;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    background-color 140ms ease;
+}
+html:not(.dark)
+  :is(
+    [data-slot="input"]:not(.border-0):not(.border-none),
+    [data-slot="textarea"]:not(.border-0):not(.border-none),
+    [data-slot="select-trigger"]
+  ):hover:not(:disabled):not([aria-invalid="true"]):not([data-invalid="true"]) {
+  border-color: var(--pi-line-strong);
+}
+html:not(.dark)
+  :is(
+    [data-slot="input"]:not(.border-0):not(.border-none),
+    [data-slot="textarea"]:not(.border-0):not(.border-none),
+    [data-slot="select-trigger"]
+  ):focus-visible {
+  outline: none;
+  border-color: var(--pi-brand);
+  box-shadow: var(--control-focus);
+}
+html:not(.dark)
+  :is(input, textarea, [role="combobox"]):is(
+    [aria-invalid="true"],
+    [data-invalid="true"]
+  ) {
+  border-color: var(--pi-danger);
+}
+html:not(.dark)
+  :is(input, textarea, [role="combobox"]):is(
+    [aria-invalid="true"],
+    [data-invalid="true"]
+  ):focus-visible {
+  outline: none;
+  box-shadow: var(--control-error-focus);
+}
+html:not(.dark)
+  :is(
+    [data-slot="input"]:not(.border-0):not(.border-none),
+    [data-slot="textarea"]:not(.border-0):not(.border-none),
+    [data-slot="select-trigger"]
+  ):disabled {
+  background: var(--pi-fill);
+  opacity: 0.55;
+}
+html:not(.dark)
+  :is(
+    [data-slot="menu-content"],
+    [data-slot="select-content"],
+    [data-slot="popover-content"]
+  ) {
+  border: 1px solid var(--pi-line-2);
+  border-radius: 12px;
+  background: var(--pi-surface-panel);
+  color: var(--pi-ink);
+  box-shadow: var(--surface-shadow);
+  animation-duration: 140ms;
+}
+html:not(.dark) [data-slot="menu-content"] {
+  padding: 6px;
+}
+html:not(.dark)
+  :is(
+    [role="menuitem"],
+    [role="menuitemcheckbox"],
+    [role="menuitemradio"],
+    [role="option"]
+  ) {
+  border-radius: 6px;
+  transition:
+    background-color 100ms ease,
+    color 100ms ease;
+}
+html:not(.dark)
+  :is(
+    [role="menuitem"],
+    [role="menuitemcheckbox"],
+    [role="menuitemradio"],
+    [role="option"]
+  )[data-highlighted] {
+  background: var(--pi-fill);
+  outline: none;
+}
+html:not(.dark)
+  :is(
+    [role="menuitemcheckbox"],
+    [role="menuitemradio"],
+    [role="option"]
+  )[data-state="checked"] {
+  background: var(--pi-brand-tint);
+  color: var(--pi-brand-active);
+}
+html:not(.dark) [role="checkbox"] {
+  box-shadow: none;
+  border-radius: 4px;
+}
+html:not(.dark) [role="checkbox"]:hover:not(:disabled) {
+  border-color: var(--pi-brand);
+}
+html:not(.dark)
+  [data-slot="tabs-trigger"]:hover:not(:disabled):not([data-state="active"]) {
+  color: var(--pi-ink);
+  border-bottom-color: var(--pi-line-strong);
+}
+html:not(.dark) .table-region tr[data-state="selected"] > td {
+  background: var(--pi-brand-tint);
+}
+html:not(.dark) [data-slot="dialog-overlay"] {
+  background: var(--overlay-scrim);
+  backdrop-filter: blur(2px);
+}
+html:not(.dark) [data-slot="dialog-content"] {
+  border-radius: 16px;
+  border-color: var(--pi-line);
+  box-shadow:
+    0 24px 80px rgb(var(--shadow-rgb) / 16%),
+    0 4px 16px rgb(var(--shadow-rgb) / 6%);
+  max-height: calc(100dvh - 32px);
+}
+html:not(.dark) [data-slot="dialog-close"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--pi-body);
+  opacity: 1;
+}
+html:not(.dark) [data-slot="dialog-close"]:hover {
+  background: var(--pi-fill);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-button,
+  [data-slot],
+  [role="menuitem"],
+  [role="option"] {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}
+
+/* Composite controls own their focus boundary; inner text editors are bare.
+   Action buttons retain their independent keyboard focus indicators. */
+html:not(.dark)
+  :is(
+    [data-neo-input-box],
+    [data-slot="input-group"],
+    .neo-skill-search,
+    label:has(> input)
+  ):has(:is(input, textarea):focus-visible) {
+  border-color: var(--pi-brand);
+  outline: none;
+  box-shadow: var(--control-focus);
+}
+html:not(.dark)
+  :is(
+    [data-neo-input-box],
+    [data-slot="input-group"],
+    .neo-skill-search,
+    label:has(> input)
+  )
+  :is(input, textarea):focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+html:not(.dark) [data-neo-input-box] textarea {
+  border-radius: 0;
+  background: transparent;
+}
+html:not(.dark) [data-slot="input-group"]:has([aria-invalid="true"]) {
+  border-color: var(--pi-danger);
+}
+html:not(.dark)
+  [data-slot="input-group"]:has([aria-invalid="true"]:focus-visible) {
+  box-shadow: var(--control-error-focus);
+}
+
+/* Joined actions share one silhouette, with independent focus and hit targets. */
+html:not(.dark) .ui-split-button > .ui-button {
+  border-radius: 0;
+}
+html:not(.dark) .ui-split-button > .ui-button:first-child {
+  border-radius: 999px 0 0 999px;
+}
+html:not(.dark) .ui-split-button > .ui-button:last-child {
+  border-radius: 0 999px 999px 0;
+  margin-left: 0;
+  border-left: 1px solid rgb(255 255 255 / 28%);
+}
+html:not(.dark) .ui-split-button > .ui-button:focus-visible {
+  z-index: 1;
+}
+
+/* Mercury-style tables: inset from the workspace, with fine cell rules.
+   Do not clip the table: sticky columns, headers and resize handles remain usable. */
+html:not(.dark) [data-slot="table"] {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--pi-line);
+  border-radius: 8px;
+  color: var(--pi-ink-2);
+}
+html:not(.dark)
+  [data-slot="table"]
+  > :is(thead, tbody, tfoot)
+  > tr
+  > :is(th, td) {
+  border-left: 0;
+  border-right: 1px solid var(--pi-line);
+  border-bottom: 1px solid var(--pi-line);
+}
+html:not(.dark)
+  [data-slot="table"]
+  > :is(thead, tbody, tfoot)
+  > tr
+  > :is(th, td):last-child {
+  border-right: 0;
+}
+html:not(.dark) [data-slot="table"] > tbody:last-child > tr:last-child > td {
+  border-bottom: 0;
+}
+html:not(.dark) [data-slot="table"] > thead > tr > th {
+  background: var(--pi-surface-panel);
+  color: var(--pi-faint);
+  font-weight: 400;
+  height: 36px;
+}
+html:not(.dark) [data-slot="table"] > thead > tr {
+  box-shadow: none;
+}
+html:not(.dark) [data-slot="table"] > tbody > tr > td {
+  height: 40px;
+  font-variant-numeric: tabular-nums;
+}
+:root:not(.dark) {
+  --badge-neutral: 240 12% 93%;
+  --badge-neutral-foreground: 240 10% 32%;
+  --badge-information: 194 24% 94%;
+  --badge-information-foreground: 240 10% 32%;
+  --badge-positive: 150 24% 94%;
+  --badge-positive-foreground: 150 40% 34%;
+  --badge-notice: 24 50% 95%;
+  --badge-notice-foreground: 22 70% 39%;
+}
+
+/* Gutters live OUTSIDE the scrolling viewport so they cannot scroll away.
+   Sticky columns stay inside that inset viewport. */
+.table-scroller {
+  margin-inline: var(--table-gutter, 24px);
+  margin-bottom: 16px;
+}
+.table-scroller .table-region {
+  /* No bottom padding: the table's last row meets the frame's bottom edge,
+     so reaching the end of the list never lifts the table off it (9 Nov
+     2026; 24px here made the whole table rise as the last row arrived). */
+  padding: 12px 0 0;
+}
+.table-scroller > .sticky.px-page,
+.table-scroller > .sticky .px-page {
+  padding-inline: 0;
+}
+.table-scroller ~ [data-slot="overlay-scrollbars"] {
+  display: none;
+}
+html:not(.dark) [data-slot="table"] > thead > tr:first-child > th {
+  border-top: 1px solid var(--pi-line-2);
+}
+html:not(.dark) [data-slot="table"] > thead > tr:first-child > th:first-child {
+  border-top-left-radius: 7px;
+}
+html:not(.dark) [data-slot="table"] > thead > tr:first-child > th:last-child {
+  border-top-right-radius: 7px;
+}
+html:not(.dark) [data-slot="table"] > tbody > tr:last-child > td:first-child {
+  border-bottom-left-radius: 7px;
+}
+html:not(.dark) [data-slot="table"] > tbody > tr:last-child > td:last-child {
+  border-bottom-right-radius: 7px;
+}
+@media (max-width: 640px) {
+  :root {
+    --table-gutter: 16px;
+  }
+}
+
+/* The pinned action cells form the visible right perimeter even when the
+   table's physical edge is outside the horizontal viewport. */
+html:not(.dark)
+  [data-slot="table"]
+  > :is(thead, tbody, tfoot)
+  > tr
+  > .pin-edge-r:last-child {
+  border-right: 1px solid var(--pi-line-2);
+  padding-inline: 8px;
+}
+
+/* Dedicated scrollbar lanes outside the scrolling content. */
+.table-scroller {
+  margin-right: var(--table-gutter, 24px);
+  margin-bottom: 28px;
+}
+.table-scroller.scrollbar-hide {
+  scrollbar-width: none;
+  scrollbar-gutter: auto;
+}
+.table-scroller.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.table-scroller ~ [data-slot="overlay-scrollbars"] {
+  display: block;
+  left: var(--table-gutter, 24px);
+  right: var(--table-gutter, 24px);
+  bottom: 28px;
+}
+.table-scroller ~ [data-slot="overlay-scrollbars"] > .h-1\.5 {
+  bottom: -10px !important;
+  height: 4px;
+}
+/* Vertical page scrollbar follows the workspace edge, not the table edge. */
+.table-scroller
+  ~ [data-slot="overlay-scrollbars"]
+  > [data-scroll-axis="vertical"] {
+  right: calc(3px - var(--table-gutter, 24px)) !important;
+  width: 6px;
+  background: var(--scrollbar-thumb);
+  opacity: 1;
+  z-index: 1;
+}
+.table-scroller
+  ~ [data-slot="overlay-scrollbars"]:has(
+    [data-scroll-axis="vertical"]
+  )::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: calc(1px - var(--table-gutter, 24px));
+  width: 10px;
+  background: rgb(var(--shadow-rgb) / 4%);
+}
+
+.table-scroller ~ [data-slot="overlay-scrollbars"] > div {
+  background-color: var(--pi-line-2);
+}
+.table-scroller ~ [data-slot="overlay-scrollbars"] > div:hover {
+  background-color: var(--pi-faint);
+}
+
+.table-scroller
+  ~ [data-slot="overlay-scrollbars"]
+  > [data-scroll-axis="vertical"]:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* The pinned first cell owns the left perimeter when the table scrolls. */
+html:not(.dark)
+  [data-slot="table"]
+  > :is(thead, tbody, tfoot)
+  > tr
+  > :is(th, td):first-child {
+  border-left: 1px solid var(--pi-line-2);
+}
+/* Keep page controls stationary; table headers stop immediately below them. */
+.table-scroller > .sticky {
+  top: 0;
+  z-index: 20;
+  background: var(--pi-surface-panel);
+}
+.table-scroller .table-region thead {
+  top: calc(var(--table-toolbar-height, 0px) + 12px);
+}
+
+/* Opaque breathing room above the sticky header prevents rows from showing
+   through the gap. Borders travel with header cells, not the scrolling table. */
+.table-scroller > .sticky::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -12px;
+  height: 12px;
+  background: var(--pi-surface-panel);
+  pointer-events: none;
+}
+html:not(.dark) .table-scroller [data-slot="table"] {
+  border-top: 0;
+}
+.table-scroller .table-region thead {
+  isolation: isolate;
+  z-index: 15;
+  background: var(--pi-surface-panel);
+}
+html:not(.dark)
+  .table-scroller[data-table-scrolled]
+  [data-slot="table"]
+  > thead
+  > tr:first-child
+  > th {
+  border-radius: 0;
+}
+.table-scroller [data-pin-l] .pin-edge-l::after,
+.table-scroller [data-pin-r] .pin-edge-r::after {
+  width: 4px;
+}
+
+/* One stationary perimeter; cell borders only draw the internal grid. */
+html:not(.dark) .table-scroller [data-slot="table"] {
+  border: 0;
+  border-radius: 0;
+}
+html:not(.dark)
+  .table-scroller
+  [data-slot="table"]
+  > :is(thead, tbody, tfoot)
+  > tr
+  > :is(th, td):first-child {
+  border-left: 0;
+}
+html:not(.dark)
+  .table-scroller
+  [data-slot="table"]
+  > :is(thead, tbody, tfoot)
+  > tr
+  > :is(th, td):last-child {
+  border-right: 0;
+}
+html:not(.dark)
+  .table-scroller
+  [data-slot="table"]
+  > thead
+  > tr:first-child
+  > th {
+  border-top: 0;
+  border-radius: 0;
+}
+html:not(.dark)
+  .table-scroller
+  [data-slot="table"]
+  > tbody
+  > tr:last-child
+  > td {
+  border-radius: 0;
+}
+.table-scroller
+  ~ [data-slot="overlay-scrollbars"]
+  > [data-slot="table-viewport-frame"],
+.table-scroller
+  ~ [data-slot="overlay-scrollbars"]
+  > [data-slot="table-viewport-frame"]:hover {
+  position: absolute;
+  inset-inline: 0;
+  border: 1px solid var(--pi-line-2);
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: 0 0 0 2px var(--pi-surface-panel);
+  pointer-events: none;
+}
+
+/* Low-contrast table rules, shared by the viewport frame and cell grid. */
+html:not(.dark) .table-scroller {
+  --table-rule: var(--border-subtle);
+}
+html:not(.dark)
+  .table-scroller
+  [data-slot="table"]
+  > :is(thead, tbody, tfoot)
+  > tr
+  > :is(th, td) {
+  border-color: var(--table-rule);
+}
+html:not(.dark)
+  .table-scroller
+  ~ [data-slot="overlay-scrollbars"]
+  > [data-slot="table-viewport-frame"] {
+  border-color: var(--border-subtle);
+}
+
+/* Button focus has a single owner. Tailwind/Radix focus rings must not stack
+   with the keyboard outline, including focus restored after closing menus. */
+html :is(button, .ui-button, [role="button"], [role="tab"]):focus {
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-ring-offset-shadow: 0 0 #0000;
+  box-shadow: none !important;
+}
+html
+  :is(button, .ui-button, [role="button"], [role="tab"]):focus:not(
+    :focus-visible
+  ) {
+  outline: none !important;
+}
+html :is(button, .ui-button, [role="button"], [role="tab"]):focus-visible {
+  outline: 2px solid var(--pi-faint) !important;
+  outline-offset: 2px;
+}
+
+/* The selected row's brand edge and fill follow the frame's rounded corners
+   when the last row reaches the bottom of the view. */
+html .table-scroller [data-slot="table"] > tbody > tr:last-child > td:first-child {
+  border-bottom-left-radius: 7px;
+}
+html .table-scroller [data-slot="table"] > tbody > tr:last-child > td:last-child {
+  border-bottom-right-radius: 7px;
+}

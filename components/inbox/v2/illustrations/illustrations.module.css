@@ -1,0 +1,455 @@
+/*
+  Inbox illustrations — one-shot vignettes for milestones (9 Nov 2026).
+
+  Rules every scene here follows:
+  - The base style of every element is its FINAL frame. Keyframes describe
+    only where an element starts, and run with `backwards` fill, so turning
+    the animation off (reduced motion, or the gallery's toggle) leaves the
+    finished picture rather than a blank or half-built one.
+  - Each scene plays once on mount. Replay = remount (React key).
+  - Only transform, opacity, stroke-dashoffset and filter animate.
+  - Precision Indigo tokens only, so light and dark follow the theme.
+  - Calm fintech motion: enter easing, no bounce, under ~1.8s end to end.
+*/
+
+.scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  --ease: var(--aia-motion-easing-enter, cubic-bezier(0.2, 0, 0, 1));
+  --ease-move: var(--aia-motion-easing-standard, cubic-bezier(0.4, 0, 0.2, 1));
+}
+.scene * {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* ---------------------------------------------------------------- shared */
+.paper {
+  fill: var(--pi-surface-panel);
+  stroke: var(--pi-line-2);
+  stroke-width: 1;
+}
+.line {
+  stroke: var(--pi-line-2);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.lineStrong {
+  stroke: var(--pi-ink-3);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.tray {
+  fill: var(--pi-sunken);
+  stroke: var(--pi-line-2);
+  stroke-width: 1;
+}
+.trayLip {
+  fill: var(--pi-surface-panel);
+  stroke: var(--pi-line-2);
+  stroke-width: 1;
+}
+.shadow {
+  fill: var(--pi-ink);
+  opacity: 0.06;
+}
+.check {
+  fill: none;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 24;
+  stroke-dashoffset: 0;
+}
+
+/* Badges: a filled disc with a glyph. */
+.badgeSuccess {
+  fill: var(--pi-success-bg);
+  stroke: var(--pi-success-line);
+}
+.badgeWarning {
+  fill: var(--pi-warning-bg);
+  stroke: var(--pi-warning-line);
+}
+.badgeDanger {
+  fill: var(--pi-danger-bg);
+  stroke: var(--pi-danger-line);
+}
+.inkSuccess {
+  stroke: var(--pi-success);
+}
+.inkWarning {
+  stroke: var(--pi-warning);
+}
+.inkDanger {
+  stroke: var(--pi-danger);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+@keyframes drawCheck {
+  from {
+    stroke-dashoffset: 24;
+  }
+}
+.popIn {
+  animation: popIn 240ms var(--ease) backwards;
+}
+.drawCheck {
+  animation: drawCheck 260ms var(--ease) backwards;
+}
+
+/* ============================================================ 1. Review clear
+   The queue reaches zero: the loose sheets square up into the tray, and a
+   "reviewed" stamp lands on the stack. */
+.rcSheet1 {
+  animation: rcSquare1 520ms var(--ease) 80ms backwards;
+}
+.rcSheet2 {
+  animation: rcSquare2 520ms var(--ease) 160ms backwards;
+}
+.rcSheet3 {
+  animation: rcSquare3 520ms var(--ease) 240ms backwards;
+}
+@keyframes rcSquare1 {
+  from {
+    transform: translate(-22px, -10px) rotate(-11deg);
+  }
+}
+@keyframes rcSquare2 {
+  from {
+    transform: translate(20px, -16px) rotate(9deg);
+  }
+}
+@keyframes rcSquare3 {
+  from {
+    transform: translate(-6px, -24px) rotate(-4deg);
+  }
+}
+
+.rcStamp {
+  transform: rotate(-12deg);
+  animation: rcStamp 300ms cubic-bezier(0.3, 0, 0.1, 1) 820ms backwards;
+}
+@keyframes rcStamp {
+  from {
+    opacity: 0;
+    transform: rotate(-12deg) scale(1.6);
+  }
+}
+.rcStampDisc {
+  fill: var(--pi-surface-panel);
+  stroke: var(--pi-success);
+  stroke-width: 2;
+}
+.rcStampRing {
+  fill: none;
+  stroke: var(--pi-success);
+  stroke-width: 1;
+  stroke-dasharray: 2 2.5;
+}
+.rcStampCheck {
+  composes: check;
+  stroke: var(--pi-success);
+  stroke-width: 2.75;
+  animation: drawCheck 280ms var(--ease) 1080ms backwards;
+}
+/* The ink spreading out from the stamp — gone in the final frame. */
+.rcSpread {
+  fill: none;
+  stroke: var(--pi-success);
+  stroke-width: 1.5;
+  opacity: 0;
+  animation: rcSpread 560ms var(--ease) 1000ms;
+}
+@keyframes rcSpread {
+  from {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+.rcCount {
+  animation: fadeIn 200ms var(--ease) 1200ms backwards;
+}
+.rcCountText {
+  fill: var(--pi-success);
+  font: 600 10px/1 var(--font-sans, system-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================ 2. Sync outcome
+   Approved sheets travel from the tray to ERP. Success: all arrive and ERP
+   gets a tick. Partial: one turns back and waits in the tray, marked. Failure:
+   the connection pulls apart and nothing leaves. */
+.syRoute {
+  stroke: var(--pi-line-2);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 4;
+  stroke-linecap: round;
+}
+.syErp {
+  fill: var(--pi-brand-tint);
+  stroke: var(--pi-brand-border);
+  stroke-width: 1;
+}
+.syErpLine {
+  stroke: var(--pi-brand-border);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.syErpLabel {
+  fill: var(--pi-brand);
+  font: 700 9px/1 var(--font-sans, system-ui);
+  letter-spacing: 0.12em;
+}
+
+/* Travellers: base = arrived (invisible inside ERP). */
+.syTravel {
+  opacity: 0;
+  animation: syTravel 760ms var(--ease-move) backwards;
+}
+@keyframes syTravel {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(124px, -6px) scale(0.72);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(140px, 0) scale(0.5);
+  }
+}
+
+/* Partial: goes halfway, turns back, settles in the tray marked amber. */
+.syHeld {
+  animation: syHeld 900ms var(--ease-move) backwards;
+}
+@keyframes syHeld {
+  0% {
+    transform: translate(0, 0);
+  }
+  45% {
+    transform: translate(58px, -8px) scale(0.86);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+.syHeldPaper {
+  fill: var(--pi-surface-panel);
+  stroke: var(--pi-warning);
+  stroke-width: 1.25;
+  animation: syHeldInk 900ms linear backwards;
+}
+@keyframes syHeldInk {
+  0%,
+  60% {
+    stroke: var(--pi-line-2);
+  }
+}
+
+/* ERP takes in what arrived. */
+.syErpPulse {
+  animation: syPulse 360ms var(--ease) backwards;
+}
+@keyframes syPulse {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.045);
+  }
+}
+.syErpDim {
+  opacity: 0.45;
+  animation: syDim 400ms var(--ease) 380ms backwards;
+}
+@keyframes syDim {
+  from {
+    opacity: 1;
+  }
+}
+
+/* Failure: the plug and socket start joined and pull apart. */
+.syPlug {
+  fill: var(--pi-surface-panel);
+  stroke: var(--pi-ink-3);
+  stroke-width: 1.5;
+}
+.syPlugLeft {
+  animation: syUnplugL 420ms var(--ease) 120ms backwards;
+}
+.syPlugRight {
+  animation: syUnplugR 420ms var(--ease) 120ms backwards;
+}
+@keyframes syUnplugL {
+  from {
+    transform: translateX(9px);
+  }
+}
+@keyframes syUnplugR {
+  from {
+    transform: translateX(-9px);
+  }
+}
+.syCable {
+  fill: none;
+  stroke: var(--pi-ink-3);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+/* The first sheet tries to leave and can't. */
+.syNudge {
+  animation: syNudge 520ms var(--ease-move) 560ms backwards;
+}
+@keyframes syNudge {
+  0% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(12px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* ======================================================== 6. Extraction failed
+   Why the document couldn't be read, drawn: a lock settles on it, its corner
+   tears away, or a lens finds only a blur. */
+.exDim {
+  opacity: 0.4;
+  animation: exDim 300ms var(--ease) 380ms backwards;
+}
+@keyframes exDim {
+  from {
+    opacity: 1;
+  }
+}
+
+/* Password */
+.exLock {
+  animation: exLockDrop 340ms var(--ease) 80ms backwards;
+}
+@keyframes exLockDrop {
+  from {
+    opacity: 0;
+    transform: translateY(-26px);
+  }
+}
+.exLockBody {
+  fill: var(--pi-brand);
+}
+.exLockHole {
+  fill: var(--pi-surface-panel);
+}
+.exShackle {
+  fill: none;
+  stroke: var(--pi-brand);
+  stroke-width: 4;
+  stroke-linecap: round;
+  animation: exShackle 160ms cubic-bezier(0.5, 0, 0.75, 0) 520ms backwards;
+}
+@keyframes exShackle {
+  from {
+    transform: translateY(-7px);
+  }
+}
+
+/* Damaged: the corner piece starts attached, then tears off and drops. */
+.exCorner {
+  transform: translate(16px, 30px) rotate(30deg);
+  transform-origin: 0% 100%;
+  filter: drop-shadow(0 2px 3px rgb(var(--shadow-rgb) / 0.14));
+  animation: exTear 520ms cubic-bezier(0.4, 0, 0.6, 1) 240ms backwards;
+}
+@keyframes exTear {
+  0% {
+    transform: none;
+  }
+  25% {
+    transform: translate(1px, -1px) rotate(-3deg);
+  }
+}
+.exTearEdge {
+  fill: none;
+  stroke: var(--pi-danger);
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+  animation: fadeIn 200ms var(--ease) 320ms backwards;
+}
+
+/* Unreadable: the lines are a blur; the lens sweeps and finds nothing. */
+.exBlur {
+  filter: blur(1.4px);
+  animation: exBlur 500ms var(--ease) 200ms backwards;
+}
+@keyframes exBlur {
+  from {
+    filter: blur(0);
+  }
+}
+.exLens {
+  animation: exSweep 1300ms var(--ease-move) 120ms backwards;
+}
+@keyframes exSweep {
+  0% {
+    opacity: 0;
+    transform: translate(-36px, -30px);
+  }
+  12% {
+    opacity: 1;
+  }
+  45% {
+    transform: translate(10px, -28px);
+  }
+  75% {
+    transform: translate(-22px, 6px);
+  }
+}
+.exLensGlass {
+  fill: var(--pi-surface-panel);
+  fill-opacity: 0.88;
+  stroke: var(--pi-brand);
+  stroke-width: 3;
+}
+.exLensHandle {
+  stroke: var(--pi-brand);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+}
+.exQuestion {
+  fill: var(--pi-brand);
+  font: 700 17px/1 var(--font-sans, system-ui);
+  animation: fadeIn 220ms var(--ease) 1380ms backwards;
+}
+
+/* ------------------------------------------------- turning the motion off */
+.still *,
+.still {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene,
+  .scene * {
+    animation: none !important;
+  }
+}

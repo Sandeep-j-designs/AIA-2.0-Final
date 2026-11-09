@@ -655,7 +655,9 @@ const PreviewPage = ({ entry, onEditMapping, onExit, notify }: Props) => {
         context the overlay bars and the selection bar hang off, so they sit
         over the table, neither scroll nor clip with the page, and end above
         the pager. */}
-      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
+      <div
+        className="relative flex min-h-0 min-w-0 flex-1 flex-col"
+      >
         {/* The page's one scroller, both axes: header and table scroll as a
         page and the table header sticks at the top of the content area. Not
         positioned, so the absolute selection bar inside resolves against the
@@ -952,7 +954,7 @@ const PreviewPage = ({ entry, onEditMapping, onExit, notify }: Props) => {
         <OverlayScrollbars scroller={scroller} />
 
         {selected.length > 0 && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-4 z-30 flex justify-center px-4">
+          <div className="pointer-events-none absolute inset-x-0 bottom-11 z-40 flex justify-center px-4">
             <BulkActionBar
               className="pointer-events-auto"
               selectedCount={selected.length}

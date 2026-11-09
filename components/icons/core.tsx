@@ -18,12 +18,16 @@ export type LucideProps = IconProps;
 const kebab = (s: string) =>
   s.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 
-export function make(name: string, glyph: React.ReactNode): IconComponent {
+export function make(
+  name: string,
+  glyph: React.ReactNode,
+  grid = 24
+): IconComponent {
   const Icon = React.forwardRef<SVGSVGElement, IconProps>(
     (
       {
-        size = 24,
-        strokeWidth = 2,
+        size = 20,
+        strokeWidth = grid * 0.075,
         color = "currentColor",
         absoluteStrokeWidth = false,
         className,
@@ -36,13 +40,13 @@ export function make(name: string, glyph: React.ReactNode): IconComponent {
         xmlns="http://www.w3.org/2000/svg"
         width={size}
         height={size}
-        viewBox="0 0 24 24"
+        viewBox={`0 0 ${grid} ${grid}`}
         fill="none"
         color={color}
         stroke={color}
         strokeWidth={
           absoluteStrokeWidth && Number(size) > 0
-            ? (Number(strokeWidth) * 24) / Number(size)
+            ? (Number(strokeWidth) * grid) / Number(size)
             : strokeWidth
         }
         strokeLinecap="round"

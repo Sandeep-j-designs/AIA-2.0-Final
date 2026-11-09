@@ -92,8 +92,11 @@ export default function CollectionSetup({
 
   return (
     <div className="agent-setup">
+      <p className="mb-6 text-small leading-6 text-pi-body">
+        Choose where documents come from. Review the defaults below, then start collecting into Inbox.
+      </p>
       <section>
-        <h2 className="text-body font-semibold text-pi-ink">Sources</h2>
+        <h2 className="text-body font-semibold text-pi-ink">Choose your sources</h2>
         <ul className="agent-setup-list mt-3">
           {PROVIDERS.map((provider) => {
             const c = setup.channels.find((c) => c.provider === provider);
@@ -118,7 +121,7 @@ export default function CollectionSetup({
                     aria-label={
                       provider === "Gmail" ? "Gmail label" : "Drive folder"
                     }
-                    className="w-56 flex-none"
+                    className="collection-source-scope"
                     value={c.scope}
                     onChange={(scope) =>
                       setDraftChannel(company, { ...c, scope })
@@ -140,8 +143,13 @@ export default function CollectionSetup({
         </p>
       </section>
 
-      <section className="mt-8">
-        <h2 className="text-body font-semibold text-pi-ink">What to collect</h2>
+      <details className="agent-setup-disclosure mt-6">
+        <summary>
+          <span className="block text-small font-medium text-pi-ink">Collection settings</span>
+          <span className="mt-1 block text-caption text-pi-body">
+            {setup.files === "bills" ? "Supplier bills" : "All documents"} · {setup.senders === "known" ? "Known suppliers and staff" : "Anyone in these sources"} · {BACKFILL_LABEL[setup.backfill]} · {setup.schedule === "15m" ? "Every 15 minutes" : "Run manually"}
+          </span>
+        </summary>
         <div className="mt-3 grid gap-x-5 gap-y-4 sm:grid-cols-2">
           <Field label="Documents">
             <NeoSelect
@@ -188,12 +196,12 @@ export default function CollectionSetup({
             />
           </Field>
         </div>
-      </section>
+      </details>
 
-      <section className="mt-8">
+      <section className="mt-6">
         <div className="flex items-baseline justify-between gap-3">
           <h2 className="text-body font-semibold text-pi-ink">
-            What would happen now
+            Preview with sample documents
           </h2>
           {valid && (
             <span className="text-caption text-pi-body">
@@ -203,6 +211,13 @@ export default function CollectionSetup({
           )}
         </div>
         {valid ? (
+          <details className="agent-setup-disclosure mt-3">
+            <summary>
+              <span className="block text-small font-medium text-pi-ink">
+                {results.filter((r) => r.outcome === "prepared").length} ready for Inbox · {results.filter((r) => r.outcome === "needs-decision").length} held for review
+              </span>
+              <span className="mt-1 block text-caption text-pi-body">View each document and why it is included or skipped</span>
+            </summary>
           <ul className="agent-setup-list mt-3">
             {results.map((r, i) => (
               <li
@@ -227,6 +242,7 @@ export default function CollectionSetup({
               </li>
             )}
           </ul>
+          </details>
         ) : (
           <p className="mt-3 text-small text-pi-body">
             Switch on a source to see what Neo would collect.
@@ -254,7 +270,7 @@ export default function CollectionSetup({
           Cancel
         </Button>
         <Button disabled={!valid} onClick={save}>
-          {existing ? "Save changes" : "Turn on"}
+          {existing ? "Save changes" : "Start collecting"}
         </Button>
       </footer>
     </div>

@@ -6,9 +6,5 @@
 }
 
 .icon[data-active="true"] {
-  color: var(--nav-active-ink);
-}
-
-.icon[data-active="true"] > svg {
-  stroke-width: 2.25;
+  color: var(--nav-active-rail);
 }

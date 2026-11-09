@@ -1,0 +1,640 @@
+{
+  "primitives": {
+    "blue": {
+      "50": "#f1f7ff",
+      "100": "#e4eeff",
+      "200": "#c9dcff",
+      "300": "#a7c2ff",
+      "400": "#7c9df9",
+      "500": "#5778df",
+      "600": "#4260c4",
+      "700": "#324ca8",
+      "800": "#243989",
+      "900": "#162666",
+      "950": "#0b1649"
+    },
+    "sky": {
+      "50": "#eff8ff",
+      "100": "#dff1fe",
+      "200": "#bfe2fb",
+      "300": "#96ccf2",
+      "400": "#5faadd",
+      "500": "#2b88c0",
+      "600": "#0070a6",
+      "700": "#005b8d",
+      "800": "#004772",
+      "900": "#003154",
+      "950": "#001f3b"
+    },
+    "neutral": {
+      "0": "#ffffff",
+      "50": "#f6faff",
+      "100": "#eff4fc",
+      "200": "#e2e6ee",
+      "300": "#d0d4dc",
+      "400": "#9ea5b2",
+      "500": "#747b87",
+      "600": "#575e69",
+      "700": "#424853",
+      "800": "#2d333d",
+      "900": "#1c222b",
+      "950": "#0f141d",
+      "1000": "#04070f"
+    },
+    "green": {
+      "50": "#effaf1",
+      "100": "#dff4e4",
+      "200": "#c0e8ca",
+      "300": "#97d6a7",
+      "400": "#60b77b",
+      "500": "#2a9754",
+      "600": "#007f3d",
+      "700": "#00692c",
+      "800": "#00531f",
+      "900": "#003b10",
+      "950": "#002706"
+    },
+    "amber": {
+      "50": "#fff5ea",
+      "100": "#fdead7",
+      "200": "#f9d5b0",
+      "300": "#eeb87e",
+      "400": "#d79039",
+      "500": "#b96b00",
+      "600": "#9f5300",
+      "700": "#864000",
+      "800": "#6c2f00",
+      "900": "#4f1e00",
+      "950": "#361000"
+    },
+    "red": {
+      "50": "#fff1ef",
+      "100": "#ffe4df",
+      "200": "#ffc9c0",
+      "300": "#ffa498",
+      "400": "#f87266",
+      "500": "#db423c",
+      "600": "#be2323",
+      "700": "#a20611",
+      "800": "#830004",
+      "900": "#610000",
+      "950": "#440000"
+    }
+  },
+  "semantic": [
+    {
+      "name": "background-page",
+      "light": "#ffffff",
+      "dark": "#090e1a",
+      "description": "The app canvas behind tables and pages."
+    },
+    {
+      "name": "background-card",
+      "light": "#ffffff",
+      "dark": "#101623",
+      "description": "Cards, dialogs, sheets, table rows and form panels."
+    },
+    {
+      "name": "background-elevated",
+      "light": "#ffffff",
+      "dark": "#161b29",
+      "description": "Menus, popovers, the command palette: anything floating."
+    },
+    {
+      "name": "background-input",
+      "light": "#ffffff",
+      "dark": "#101623",
+      "description": "Text fields, selects and date fields."
+    },
+    {
+      "name": "background-sunken",
+      "light": "#eff4fc",
+      "dark": "#181e2b",
+      "description": "Wells inside a card: segmented tracks, code chips, quiet panels."
+    },
+    {
+      "name": "background-fill",
+      "light": "#eff4fc",
+      "dark": "#1b212f",
+      "description": "Neutral chips, avatars, secondary buttons and Missing-in-PR pills."
+    },
+    {
+      "name": "background-fill-strong",
+      "light": "#e2e6ee",
+      "dark": "#252b3a",
+      "description": "Pressed neutral controls, progress tracks, company initials."
+    },
+    {
+      "name": "background-header",
+      "light": "#f6faff",
+      "dark": "#0d121f",
+      "description": "Table header strip and section heads."
+    },
+    {
+      "name": "background-row-hover",
+      "light": "#f6faff",
+      "dark": "#181e2b",
+      "description": "A table row under the pointer."
+    },
+    {
+      "name": "background-selected",
+      "light": "#f1f7ff",
+      "dark": "#1a264b",
+      "description": "Selected rows (with a 2px brand edge) and checked menu items."
+    },
+    {
+      "name": "background-disabled",
+      "light": "#eff4fc",
+      "dark": "#191f2d",
+      "description": "Disabled controls."
+    },
+    {
+      "name": "background-inverse",
+      "light": "#0b1649",
+      "dark": "#02051b",
+      "description": "Toasts and dark hero blocks. Pair with foreground-inverse."
+    },
+    {
+      "name": "background-inverse-muted",
+      "light": "#162666",
+      "dark": "#0a122a",
+      "description": "Icon circles and chips on toasts."
+    },
+    {
+      "name": "background-brand",
+      "light": "#324ca8",
+      "dark": "#4260c4",
+      "description": "Brand-filled marks: the notification badge, solid tags."
+    },
+    {
+      "name": "background-brand-subtle",
+      "light": "#f1f7ff",
+      "dark": "#1a264b",
+      "description": "Brand wash: AI mark tile, info pills, active tab of a track."
+    },
+    {
+      "name": "background-action",
+      "light": "#324ca8",
+      "dark": "#4260c4",
+      "description": "Primary buttons. Pair with foreground-on-action."
+    },
+    {
+      "name": "background-action-hover",
+      "light": "#243989",
+      "dark": "#324ca8",
+      "description": "Primary button hover."
+    },
+    {
+      "name": "background-action-pressed",
+      "light": "#162666",
+      "dark": "#243989",
+      "description": "Primary button pressed."
+    },
+    {
+      "name": "background-ai",
+      "light": "#f1f7ff",
+      "dark": "#1a264b",
+      "description": "Behind a value the AI decided (the sparkle tile)."
+    },
+    {
+      "name": "background-secondary-series",
+      "light": "#eff8ff",
+      "dark": "#0e2c3f",
+      "description": "Second-blue wash: Manually matched, email channel, comparison series."
+    },
+    {
+      "name": "background-success",
+      "light": "#effaf1",
+      "dark": "#112a19",
+      "description": "Approved / matched / synced pill ground."
+    },
+    {
+      "name": "background-warning",
+      "light": "#fff5ea",
+      "dark": "#362107",
+      "description": "Needs review / pending / held pill ground."
+    },
+    {
+      "name": "background-error",
+      "light": "#fff1ef",
+      "dark": "#3c1714",
+      "description": "Failed / missing / blocked pill ground and error banners."
+    },
+    {
+      "name": "background-info",
+      "light": "#f1f7ff",
+      "dark": "#1a264b",
+      "description": "Received / extracting / informational pill ground."
+    },
+    {
+      "name": "background-destructive",
+      "light": "#a20611",
+      "dark": "#be2323",
+      "description": "Delete buttons only. Red is reserved for errors and deletes."
+    },
+    {
+      "name": "background-destructive-hover",
+      "light": "#830004",
+      "dark": "#db423c",
+      "description": "Delete button hover."
+    },
+    {
+      "name": "background-nav-top",
+      "light": "#f1f7ff",
+      "dark": "#0d1427",
+      "description": "Sidebar ground (top). Pale brand wash in light, tinted panel in dark."
+    },
+    {
+      "name": "background-nav-bottom",
+      "light": "#f1f7ff",
+      "dark": "#0d1427",
+      "description": "Sidebar ground (bottom); equal to top while the sidebar is flat."
+    },
+    {
+      "name": "background-nav-hover",
+      "light": "#eaf0ff",
+      "dark": "#141d36",
+      "description": "A sidebar row under the pointer."
+    },
+    {
+      "name": "background-nav-active",
+      "light": "#e4eeff",
+      "dark": "#182448",
+      "description": "The current page's row in the sidebar."
+    },
+    {
+      "name": "border-nav",
+      "light": "#e4eeff",
+      "dark": "#1e263a",
+      "description": "The sidebar's right edge and its hairlines."
+    },
+    {
+      "name": "foreground-primary",
+      "light": "#1c222b",
+      "dark": "#f2f5fb",
+      "description": "Headings, party names, amounts: the main ink."
+    },
+    {
+      "name": "foreground-strong",
+      "light": "#2d333d",
+      "dark": "#dadee6",
+      "description": "Emphasised secondary text."
+    },
+    {
+      "name": "foreground-secondary",
+      "light": "#424853",
+      "dark": "#bec4d2",
+      "description": "Body copy, table values, labels."
+    },
+    {
+      "name": "foreground-tertiary",
+      "light": "#575e69",
+      "dark": "#a0a8b8",
+      "description": "Metadata, timestamps, placeholders, table headers."
+    },
+    {
+      "name": "foreground-disabled",
+      "light": "#9ea5b2",
+      "dark": "#636975",
+      "description": "Disabled labels."
+    },
+    {
+      "name": "foreground-inverse",
+      "light": "#ffffff",
+      "dark": "#ffffff",
+      "description": "Text on toasts and dark hero blocks."
+    },
+    {
+      "name": "foreground-inverse-muted",
+      "light": "#c9dcff",
+      "dark": "#c9dcff",
+      "description": "Secondary text on toasts."
+    },
+    {
+      "name": "foreground-on-action",
+      "light": "#ffffff",
+      "dark": "#ffffff",
+      "description": "Labels on primary and delete buttons."
+    },
+    {
+      "name": "foreground-brand",
+      "light": "#324ca8",
+      "dark": "#a7c2ff",
+      "description": "Links, tertiary buttons, section titles in forms, active tab."
+    },
+    {
+      "name": "foreground-brand-strong",
+      "light": "#243989",
+      "dark": "#c9dcff",
+      "description": "Brand text on a brand wash; link hover."
+    },
+    {
+      "name": "foreground-link",
+      "light": "#324ca8",
+      "dark": "#a7c2ff",
+      "description": "Inline links."
+    },
+    {
+      "name": "foreground-ai",
+      "light": "#324ca8",
+      "dark": "#a7c2ff",
+      "description": "The sparkle glyph and AI reasons."
+    },
+    {
+      "name": "foreground-secondary-series",
+      "light": "#005b8d",
+      "dark": "#96ccf2",
+      "description": "Text on the second-blue wash."
+    },
+    {
+      "name": "foreground-success",
+      "light": "#00692c",
+      "dark": "#97d6a7",
+      "description": "Approved / matched text."
+    },
+    {
+      "name": "foreground-warning",
+      "light": "#864000",
+      "dark": "#eeb87e",
+      "description": "Needs review / pending text."
+    },
+    {
+      "name": "foreground-error",
+      "light": "#a20611",
+      "dark": "#ffa498",
+      "description": "Error messages, failed states, ITC at risk."
+    },
+    {
+      "name": "foreground-info",
+      "light": "#324ca8",
+      "dark": "#a7c2ff",
+      "description": "Informational pill text."
+    },
+    {
+      "name": "border-subtle",
+      "light": "#e2e6ee",
+      "dark": "#272e3c",
+      "description": "Card edges, table rules, dividers."
+    },
+    {
+      "name": "border-default",
+      "light": "#d0d4dc",
+      "dark": "#39404f",
+      "description": "Field borders, column rules, the ledger rule."
+    },
+    {
+      "name": "border-strong",
+      "light": "#9ea5b2",
+      "dark": "#565e6e",
+      "description": "Hovered fields, separators that must survive a TN panel."
+    },
+    {
+      "name": "border-focus",
+      "light": "#5778df",
+      "dark": "#7c9df9",
+      "description": "Focus edge on fields and the focus halo colour."
+    },
+    {
+      "name": "border-brand",
+      "light": "#c9dcff",
+      "dark": "#364983",
+      "description": "Brand-wash edges: AI tile hover, selected cards."
+    },
+    {
+      "name": "border-secondary-series",
+      "light": "#bfe2fb",
+      "dark": "#25526f",
+      "description": "Edges on second-blue washes."
+    },
+    {
+      "name": "border-success",
+      "light": "#c0e8ca",
+      "dark": "#275235",
+      "description": "Success pill and banner edges."
+    },
+    {
+      "name": "border-warning",
+      "light": "#f9d5b0",
+      "dark": "#694414",
+      "description": "Warning pill and banner edges."
+    },
+    {
+      "name": "border-error",
+      "light": "#ffc9c0",
+      "dark": "#7a342e",
+      "description": "Error pill and banner edges, invalid fields' halo."
+    },
+    {
+      "name": "border-info",
+      "light": "#c9dcff",
+      "dark": "#364983",
+      "description": "Info pill edges."
+    },
+    {
+      "name": "accent-brand",
+      "light": "#4260c4",
+      "dark": "#7c9df9",
+      "description": "Brand dots, chart's current series, switches on."
+    },
+    {
+      "name": "accent-brand-vivid",
+      "light": "#5778df",
+      "dark": "#7c9df9",
+      "description": "Received / extracting dots, progress fill."
+    },
+    {
+      "name": "accent-secondary-series",
+      "light": "#2b88c0",
+      "dark": "#5faadd",
+      "description": "Second-blue dots and marks (Manually matched)."
+    },
+    {
+      "name": "accent-success",
+      "light": "#2a9754",
+      "dark": "#60b77b",
+      "description": "Approved / synced dots, success icons."
+    },
+    {
+      "name": "accent-warning",
+      "light": "#d79039",
+      "dark": "#d79039",
+      "description": "Needs review / pending dots, warning icons."
+    },
+    {
+      "name": "accent-error",
+      "light": "#db423c",
+      "dark": "#f87266",
+      "description": "Failed / missing dots, error icons."
+    },
+    {
+      "name": "accent-neutral",
+      "light": "#9ea5b2",
+      "dark": "#6c727e",
+      "description": "Deleted / not started dots."
+    },
+    {
+      "name": "foreground-nav-strong",
+      "light": "#162666",
+      "dark": "#ffffff",
+      "description": "Sidebar headings and the company card name."
+    },
+    {
+      "name": "foreground-nav",
+      "light": "#404a63",
+      "dark": "#c2cadf",
+      "description": "Sidebar labels."
+    },
+    {
+      "name": "foreground-nav-muted",
+      "light": "#5f6b89",
+      "dark": "#9ba4bb",
+      "description": "Sidebar group headings."
+    },
+    {
+      "name": "foreground-nav-active",
+      "light": "#243989",
+      "dark": "#ffffff",
+      "description": "The current page's label and icon."
+    },
+    {
+      "name": "accent-nav-rail",
+      "light": "#324ca8",
+      "dark": "#a7c2ff",
+      "description": "Sidebar active rail, tags and focus."
+    }
+  ],
+  "pairs": [
+    {
+      "fg": "foreground-primary",
+      "bg": "background-card",
+      "light": 15.99,
+      "dark": 16.56
+    },
+    {
+      "fg": "foreground-secondary",
+      "bg": "background-card",
+      "light": 9.2,
+      "dark": 10.35
+    },
+    {
+      "fg": "foreground-tertiary",
+      "bg": "background-card",
+      "light": 6.54,
+      "dark": 7.57
+    },
+    {
+      "fg": "foreground-tertiary",
+      "bg": "background-header",
+      "light": 6.24,
+      "dark": 7.82
+    },
+    {
+      "fg": "foreground-tertiary",
+      "bg": "background-sunken",
+      "light": 5.92,
+      "dark": 6.98
+    },
+    {
+      "fg": "foreground-brand",
+      "bg": "background-card",
+      "light": 7.68,
+      "dark": 10.17
+    },
+    {
+      "fg": "foreground-brand",
+      "bg": "background-brand-subtle",
+      "light": 7.13,
+      "dark": 8.3
+    },
+    {
+      "fg": "foreground-on-action",
+      "bg": "background-action",
+      "light": 7.68,
+      "dark": 5.67
+    },
+    {
+      "fg": "foreground-on-action",
+      "bg": "background-action-hover",
+      "light": 10.39,
+      "dark": 7.68
+    },
+    {
+      "fg": "foreground-on-action",
+      "bg": "background-destructive",
+      "light": 8.17,
+      "dark": 6.08
+    },
+    {
+      "fg": "foreground-success",
+      "bg": "background-success",
+      "light": 6.42,
+      "dark": 9.12
+    },
+    {
+      "fg": "foreground-warning",
+      "bg": "background-warning",
+      "light": 7.1,
+      "dark": 8.56
+    },
+    {
+      "fg": "foreground-error",
+      "bg": "background-error",
+      "light": 7.42,
+      "dark": 8.31
+    },
+    {
+      "fg": "foreground-error",
+      "bg": "background-card",
+      "light": 8.17,
+      "dark": 9.49
+    },
+    {
+      "fg": "foreground-secondary-series",
+      "bg": "background-secondary-series",
+      "light": 6.78,
+      "dark": 8.42
+    },
+    {
+      "fg": "foreground-secondary",
+      "bg": "background-sunken",
+      "light": 8.33,
+      "dark": 9.54
+    },
+    {
+      "fg": "foreground-inverse",
+      "bg": "background-inverse",
+      "light": 17.14,
+      "dark": 20.19
+    },
+    {
+      "fg": "foreground-nav",
+      "bg": "background-nav-bottom",
+      "light": 8.2,
+      "dark": 11.17
+    },
+    {
+      "fg": "foreground-nav-muted",
+      "bg": "background-nav-bottom",
+      "light": 4.93,
+      "dark": 7.35
+    },
+    {
+      "fg": "foreground-nav-strong",
+      "bg": "background-nav-top",
+      "light": 12.96,
+      "dark": 18.32
+    },
+    {
+      "fg": "foreground-nav-active",
+      "bg": "background-nav-active",
+      "light": 8.89,
+      "dark": 15.17
+    },
+    {
+      "fg": "foreground-nav",
+      "bg": "background-nav-hover",
+      "light": 7.74,
+      "dark": 10.17
+    }
+  ]
+}

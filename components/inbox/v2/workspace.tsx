@@ -12,7 +12,6 @@ import { toast } from "sonner";
 import {
   Check,
   Copy,
-  FileWarning,
   ShieldCheck,
   Trash2,
   ChevronDown,
@@ -272,6 +271,11 @@ import {
 import KeyboardShortcuts from "./keyboard-shortcuts";
 import { CircleCheck, Clock, Inbox as InboxIcon } from "@/components/icons";
 import { EmptyState as FlowEmptyState } from "./empty-state";
+import {
+  ExtractionFailedIllustration,
+  ReviewClearIllustration,
+  type ExtractionFailure,
+} from "./illustrations";
 import Notifications from "@/components/notifications";
 import { useInboxNotifications } from "@/hooks/pages/notifications/use-inbox-notifications";
 const money = (n: number) =>
@@ -683,6 +687,21 @@ const MAX_UPLOAD_MB = 500;
  * `short` is the word the panel's summary line counts it by ("2 interrupted ·
  * 1 password-protected").
  */
+/** Which picture explains a failed reading: locked, damaged or unreadable. */
+const failureCause = (item: Item): ExtractionFailure => {
+  const text = [
+    item.original.failure?.type,
+    item.original.failure?.title,
+    item.error,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  if (/password|locked|encrypt/.test(text)) return "password";
+  if (/damaged|corrupt|can.t be opened|broken/.test(text)) return "damaged";
+  return "unreadable";
+};
+
 const UPLOAD_FAILURES = {
   interrupted: {
     title: "Upload interrupted",
@@ -1807,6 +1826,35 @@ export default function Workspace() {
     ? []
     : state.items.filter((x) => x.company === state.company && !x.priorVoucher);
   const all = moduleRoute ? books : books.filter((x) => !x.created);
+  /*
+    The review queue's empty state plays its illustration only when the
+    queue is cleared during this visit (it had documents, now it has none).
+    Opening a tab that was already empty, or coming back to it later, shows
+    the finished picture without motion.
+  */
+  const reviewCount = all.filter((x) => matchesTab(x, "Needs review")).length;
+  const reviewSeen = useRef({ company: state.company, had: false });
+  const [reviewCleared, setReviewCleared] = useState(false);
+  useEffect(() => {
+    if (reviewSeen.current.company !== state.company) {
+      reviewSeen.current = { company: state.company, had: reviewCount > 0 };
+      setReviewCleared(false);
+      return;
+    }
+    if (reviewCount > 0) {
+      reviewSeen.current.had = true;
+      setReviewCleared(false);
+    } else if (reviewSeen.current.had) {
+      reviewSeen.current.had = false;
+      setReviewCleared(true);
+    }
+  }, [reviewCount, state.company]);
+  // Played once on the tab; after that the picture stays still.
+  useEffect(() => {
+    if (!reviewCleared || tab !== "Needs review") return;
+    const timer = window.setTimeout(() => setReviewCleared(false), 2000);
+    return () => window.clearTimeout(timer);
+  }, [reviewCleared, tab]);
   /*
     The welcome dialog: opened only from "How Inbox works" in the page's
     overflow menu. It no longer opens by itself on a company's first visit.
@@ -3914,8 +3962,11 @@ export default function Workspace() {
                     <section className="min-h-0 overflow-auto p-5 lg:pl-2">
                       <div className="mx-auto mt-4 max-w-xl overflow-hidden rounded-md border border-pi-line bg-background shadow-sm lg:mt-10">
                         <div className="space-y-5 p-6">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-md border border-pi-lineral-gray bg-accent text-primary">
-                            <FileWarning className="h-6 w-6" aria-hidden />
+                          <div className="w-[180px] max-w-full">
+                            <ExtractionFailedIllustration
+                              key={item.id}
+                              cause={failureCause(item)}
+                            />
                           </div>
                           <div>
                             <p className="mb-2 text-overline font-semibold uppercase text-secondary-foreground">
@@ -4548,20 +4599,15 @@ export default function Workspace() {
                   Not positioned, so the floating selection bar (absolute
                   against the wrapper above) neither scrolls nor clips. */}
                 {/* The scroller's own box, so the overlay bars and the
-                  floating selection bar sit over the table and end above
-                  the pager. */}
-                <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
+                  selection bar sit inside it and end above the pager. */}
+                <div
+                  className="relative flex min-h-0 min-w-0 flex-1 flex-col"
+                >
                   <div
                     ref={scrollerElement}
                     // Native bars reserve a strip under the last row; the
                     // overlay bars below float over the rows instead.
-                    // While the bulk bar floats over the rows, the scroller
-                    // gets its height as bottom room, so the last rows can
-                    // scroll clear of it (27 Oct 2026).
-                    className={cn(
-                      "table-scroller scrollbar-hide flex min-h-0 min-w-0 flex-1 flex-col overflow-auto overscroll-none",
-                      selected.length > 0 && "pb-20"
-                    )}
+                    className="table-scroller scrollbar-hide flex min-h-0 min-w-0 flex-1 flex-col overflow-auto overscroll-none"
                   >
                     <div className="sticky left-0 shrink-0 px-page pt-6 [transform:translateZ(0)]">
                       {/*
@@ -5351,17 +5397,28 @@ export default function Workspace() {
                               be made on purpose. */}
                                 <Checkbox
                                   aria-label="Select every document on this page"
+                                  // All on the page ticks, some shows a dash;
+                                  // pressing either clears the page, pressing
+                                  // an empty box selects the page.
                                   checked={
-                                    !!pageRows.length &&
-                                    pageRows.every((x) =>
-                                      selected.includes(x.id)
-                                    )
+                                    pageRows.length &&
+                                    pageRows.every((x) => selected.includes(x.id))
+                                      ? true
+                                      : pageRows.some((x) => selected.includes(x.id))
+                                        ? "indeterminate"
+                                        : false
                                   }
-                                  onCheckedChange={(checked) =>
+                                  onCheckedChange={() => {
+                                    const ids = pageRows.map((x) => x.id);
+                                    const any = ids.some((id) =>
+                                      selected.includes(id)
+                                    );
                                     setSelected(
-                                      checked ? pageRows.map((x) => x.id) : []
-                                    )
-                                  }
+                                      any
+                                        ? selected.filter((id) => !ids.includes(id))
+                                        : Array.from(new Set([...selected, ...ids]))
+                                    );
+                                  }}
                                 />
                               </TableHead>
                               {shown.map((c) => (
@@ -6222,7 +6279,11 @@ export default function Workspace() {
                             if (tab === "Needs review")
                               return (
                                 <FlowEmptyState
-                                  flow={flow(tab)}
+                                  art={
+                                    <ReviewClearIllustration
+                                      still={!reviewCleared}
+                                    />
+                                  }
                                   title="Nothing waiting for your review"
                                   body={`You’ve reviewed all ${docs(all.length)} received${approved ? `, and ${approved} ${approved === 1 ? "is" : "are"} approved` : ""}. New documents appear here once AI Accountant has read them.`}
                                   actions={
@@ -6288,7 +6349,7 @@ export default function Workspace() {
                 reachable everywhere the bar is not.
               */}
                     {selected.length > 0 && (
-                      <div className="pointer-events-none absolute inset-x-0 bottom-4 z-30 flex justify-center px-4">
+                      <div className="pointer-events-none absolute inset-x-0 bottom-11 z-40 flex justify-center px-4">
                         {/* The Bloocks BulkActionBar. Its fields stage a value for
                         the selection; Save writes the staged values and
                         Save & approve writes them and approves. */}

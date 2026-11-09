@@ -18,8 +18,8 @@ import {
   Reconcile,
   NeoStar,
   Payables,
-  FolderTree,
-  ListChecks,
+  AccountTree,
+  TaxReconciliation,
 } from "@/components/icons";
 import AppTopBar, { type Crumb } from "@/components/top-bar-layout";
 import { basePath } from "@/lib/base-path";
@@ -152,7 +152,7 @@ const SECTIONS: NavSection[] = [
         id: "chart-of-accounts",
         label: "Chart of accounts",
         path: "/coa",
-        icon: <FolderTree />,
+        icon: <AccountTree />,
       },
       {
         kind: "item",
@@ -171,14 +171,14 @@ const SECTIONS: NavSection[] = [
         id: "gst",
         label: "GST reconciliation",
         path: "/gst-reconciliation",
-        icon: <Compliance />,
+        icon: <TaxReconciliation />,
       },
       {
         kind: "item",
         id: "checks",
         label: "Compliance checks",
         path: "/inbox?module=CHECKS",
-        icon: <ListChecks />,
+        icon: <Compliance />,
       },
       {
         kind: "item",
@@ -228,8 +228,9 @@ const COLLAPSE_KEY = "sb-collapsed";
 const ICON = "flex-none [&>svg]:size-5";
 /*
   Every top-level row is the same box: 36px, no border, so icons and labels
-  sit on one line whether the row is a link or a group. The active row is a
-  raised pill — lighter fill, hairline edge, white ink (5 Nov 2026).
+  sit on one line whether the row is a link or a group. The current page is a
+  soft brand fill with a 3px rail on the sidebar's edge and a medium label
+  (9 Nov 2026, on the pale Ink Navy wash; it was a raised pill on navy).
 */
 const NAV_ROW =
   "group relative flex h-9 items-center rounded-md border border-transparent text-body transition-colors duration-150";
@@ -324,6 +325,7 @@ const SidebarLayout = ({
         Skip to content
       </a>
       <aside
+        data-collapsed={collapsed}
         className={cn(
           "workbench-sidebar flex h-full flex-none flex-col transition-[width] duration-200 ease-out motion-reduce:transition-none",
           collapsed ? "w-16" : "w-[216px]"
@@ -340,13 +342,13 @@ const SidebarLayout = ({
             alt="AI Accountant"
             width={28}
             height={30}
-            // The logo is white in every theme (it sat under a Clay filter until 5 Nov 2026).
+            // The logo follows the sidebar (styles/palette.css): dark on the pale wash, white in dark mode.
             className="h-6 w-[22px] flex-none object-contain brightness-0 invert"
             unoptimized
             priority
           />
           {!collapsed && (
-            <span className="whitespace-nowrap text-lead font-medium tracking-[-0.03em] text-[var(--nav-ink)]">
+            <span className="whitespace-nowrap text-lead font-semibold tracking-[-0.01em] text-[var(--nav-ink)]">
               AI Accountant
             </span>
           )}
@@ -362,7 +364,7 @@ const SidebarLayout = ({
               key={section.heading ?? sectionIndex}
               role="group"
               aria-label={section.heading}
-              className={cn("flex flex-col gap-0.5", sectionIndex > 0 && "mt-4")}
+              className={cn("flex flex-col gap-0.5", sectionIndex > 0 && "mt-5")}
             >
               {section.heading &&
                 (collapsed ? (
@@ -373,7 +375,7 @@ const SidebarLayout = ({
                     className="mx-auto mb-1 h-px w-6 bg-[var(--nav-line)]"
                   />
                 ) : (
-                  <p className="mb-1 px-3 text-caption font-medium text-[var(--nav-faint)]">
+                  <p className="mb-1 px-3 text-overline font-semibold uppercase tracking-[0.06em] text-[var(--nav-faint)]">
                     {section.heading}
                   </p>
                 ))}
@@ -413,7 +415,13 @@ const SidebarLayout = ({
                     NAV_ROW,
                     collapsed ? "justify-center" : "gap-3 px-3",
                     active
-                      ? "border-[var(--nav-active-edge)] bg-[var(--nav-active-bg)] font-medium text-[var(--nav-active-ink)] shadow-[0_1px_2px_rgba(0,0,0,0.24)]"
+                      ? cn(
+                          "bg-[var(--nav-active-bg)] font-medium text-[var(--nav-active-ink)]",
+                          // The rail sits on the sidebar's own edge, past
+                          // the nav's 8px padding.
+                          !collapsed &&
+                            "before:absolute before:-left-2 before:top-2 before:bottom-2 before:w-[3px] before:rounded-r-full before:bg-[var(--nav-active-rail)]"
+                        )
                       : "text-[var(--nav-body)] hover:bg-[var(--nav-hover)] hover:text-[var(--nav-ink)]"
                   )}
                 >
@@ -434,16 +442,16 @@ const SidebarLayout = ({
                     <span
                       aria-hidden
                       className={cn(
-                        "absolute left-[calc(50%+6px)] top-2 size-2 rounded-full ring-2",
+                        "nav-unread-dot absolute rounded-full",
                         active
-                          ? "bg-[var(--nav-active-ink)] ring-[var(--pi-nav-top)]"
-                          : "bg-[var(--nav-active-rail)] ring-[var(--pi-nav-top)]"
+                          ? "bg-[var(--nav-active-rail)]"
+                          : "bg-[var(--nav-active-rail)]"
                       )}
                     />
                   ) : badge ? (
                     <span
                       className={cn(
-                        "flex-none text-small tabular-nums",
+                        "flex-none text-small font-medium tabular-nums",
                         active
                           ? "text-[var(--nav-active-ink)]"
                           : "text-[var(--nav-ink)]"
@@ -524,7 +532,7 @@ const SidebarLayout = ({
                               className={cn(
                                 "relative ml-8 flex h-8 items-center rounded-sm px-3 text-small transition-colors duration-[120ms]",
                                 active
-                                  ? "bg-[var(--nav-active-bg)] font-medium text-[var(--nav-active-ink)]"
+                                  ? "bg-[var(--nav-active-bg)] font-medium text-[var(--nav-active-ink)] before:absolute before:-left-10 before:top-2 before:bottom-2 before:w-[3px] before:rounded-r-full before:bg-[var(--nav-active-rail)]"
                                   : "text-[var(--nav-body)] hover:bg-[var(--nav-hover)] hover:text-[var(--nav-ink)]"
                               )}
                             >

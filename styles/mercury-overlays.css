@@ -1,0 +1,237 @@
+/* Overlay system: dialogs for decisions, popovers for lightweight choices.
+   Scope to light mode; dark mode retains its existing semantic palette. */
+html:not(.dark) {
+  --overlay-line: var(--border-subtle);
+  --overlay-muted: var(--background-header);
+  --overlay-radius: 12px;
+  --overlay-shadow:
+    0 12px 40px rgb(var(--shadow-rgb) / 10%), 0 2px 6px rgb(var(--shadow-rgb) / 5%);
+}
+html:not(.dark) [data-slot="dialog-overlay"] {
+  background: var(--overlay-scrim);
+  backdrop-filter: none;
+}
+html:not(.dark) [data-slot="dialog-content"] {
+  width: calc(100vw - 32px);
+  border-color: var(--overlay-line);
+  border-radius: 16px;
+  box-shadow: var(--overlay-shadow);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  animation-duration: 160ms;
+  --tw-enter-scale: 1;
+  --tw-exit-scale: 1;
+  --tw-enter-translate-x: 0;
+  --tw-enter-translate-y: 0;
+  --tw-exit-translate-x: 0;
+  --tw-exit-translate-y: 0;
+}
+html:not(.dark) [data-slot="dialog-header"] {
+  text-align: left;
+  padding-right: 40px;
+}
+html:not(.dark) [data-slot="dialog-title"] {
+  font-size: var(--type-h2);
+  line-height: 28px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--pi-ink);
+}
+html:not(.dark) [data-slot="dialog-description"] {
+  font-size: var(--type-body);
+  line-height: 22px;
+  color: var(--pi-body);
+  max-width: 60ch;
+}
+html:not(.dark) [data-slot="dialog-footer"] {
+  gap: 8px;
+  padding-top: 20px;
+  margin-top: 8px;
+  border-top: 1px solid var(--overlay-line);
+}
+html:not(.dark) [data-slot="dialog-footer"] > * {
+  margin-left: 0;
+}
+html:not(.dark) [data-slot="dialog-close"] {
+  top: 16px;
+  right: 16px;
+  background: var(--pi-fill);
+  color: var(--pi-body);
+}
+html:not(.dark) [data-slot="dialog-close"]:hover {
+  background: var(--pi-fill-2);
+}
+html:not(.dark)
+  :is(
+    [data-slot="menu-content"],
+    [data-slot="select-content"],
+    [data-slot="popover-content"]
+  ) {
+  border-color: var(--overlay-line);
+  border-radius: var(--overlay-radius);
+  box-shadow: var(--overlay-shadow);
+  max-width: calc(100vw - 24px);
+  max-height: min(640px, var(--radix-popover-content-available-height, 80dvh));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+html:not(.dark)
+  :is([data-slot="menu-content"], [data-slot="select-content"])
+  :is(
+    [role="menuitem"],
+    [role="menuitemcheckbox"],
+    [role="menuitemradio"],
+    [role="option"]
+  ) {
+  min-height: 36px;
+  border-radius: 6px;
+  line-height: 20px;
+}
+html:not(.dark) [cmdk-item] {
+  min-height: 36px;
+  border-radius: 6px;
+}
+html:not(.dark) [cmdk-item][data-selected="true"] {
+  background: var(--pi-fill);
+  color: var(--pi-ink);
+}
+html:not(.dark) [cmdk-input-wrapper]:has(input:focus-visible) {
+  border-color: var(--pi-line-strong);
+}
+/* Filter triggers are controls, not primary actions. */
+html:not(.dark) [data-slot="filter-chip"] {
+  border: 1px solid var(--overlay-line);
+  background: var(--overlay-muted);
+  border-radius: 8px;
+  min-height: 32px;
+}
+html:not(.dark)
+  [data-slot="filter-chip"]:is(:hover, :has([data-state="open"])) {
+  border-color: var(--pi-line-strong);
+  background: var(--pi-fill);
+}
+html:not(.dark) [data-slot="filter-chip"][data-applied="true"] {
+  background: var(--pi-brand-tint);
+  border-color: var(--pi-brand-border);
+}
+html:not(.dark) [data-slot="filter-chip"] button:focus-visible {
+  outline-offset: -3px;
+}
+html:not(.dark) [data-slot="filter-categories"] {
+  background: var(--overlay-muted);
+}
+html:not(.dark) [data-slot="filter-categories"] button[aria-current="true"] {
+  background: var(--pi-fill-2);
+  color: var(--pi-ink);
+}
+html:not(.dark) [data-slot="filter-panel"] :is(h2, h3) {
+  font-weight: 500;
+}
+html:not(.dark) [data-slot="filter-options"] label[data-selected="true"] {
+  background: var(--pi-brand-tint);
+}
+html:not(.dark) [data-slot="filter-panel"] input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Bring embedded native dialogs onto the same surface system. */
+html:not(.dark) :is(.ap-sheet, .ar-sheet) dialog.refined-native-dialog {
+  border: 1px solid var(--overlay-line);
+  border-radius: 16px !important;
+  box-shadow: var(--overlay-shadow) !important;
+}
+html:not(.dark)
+  :is(.ap-sheet, .ar-sheet)
+  dialog.refined-native-dialog::backdrop {
+  background: var(--overlay-scrim);
+  backdrop-filter: none;
+}
+@media (max-width: 560px) {
+  [data-slot="filter-panel"] {
+    flex-direction: column;
+    height: min(560px, 75dvh);
+  }
+  [data-slot="filter-categories"] {
+    width: 100%;
+    max-height: 190px;
+    border-right: 0;
+    border-bottom: 1px solid var(--pi-line);
+  }
+  [data-slot="filter-categories"] > h2 {
+    height: 40px;
+  }
+  [data-slot="filter-options"] {
+    min-height: 0;
+  }
+  [data-slot="dialog-footer"] > .ui-button {
+    min-height: 36px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="dialog-content"],
+  [data-slot="popover-content"],
+  [data-slot="menu-content"] {
+    animation-duration: 0ms;
+  }
+}
+
+/* Neutral field focus inside decision surfaces; error feedback remains red. */
+html:not(.dark)
+  :is(
+    [data-slot="dialog-content"],
+    [data-slot="popover-content"],
+    [data-slot="select-content"]
+  )
+  :is([data-slot="input"], [data-slot="textarea"]):focus-visible:not(
+    [aria-invalid="true"]
+  ):not([data-invalid="true"]) {
+  border-color: var(--pi-line-strong);
+  outline: none;
+  box-shadow: none;
+}
+html:not(.dark)
+  :is([data-slot="dialog-content"], [data-slot="popover-content"])
+  [data-slot="input-group"]
+  :is(input, textarea):focus-visible {
+  box-shadow: none;
+}
+
+@media (max-width: 560px) {
+  [data-slot="filter-panel"] {
+    max-width: calc(100vw - 48px);
+  }
+  [data-slot="filter-categories"] {
+    max-height: none;
+  }
+  [data-slot="filter-categories"] > div:nth-child(2) {
+    display: none;
+  }
+  [data-slot="filter-categories"] > div:nth-child(3) {
+    flex-direction: row;
+    flex: none;
+    overflow-x: auto;
+    padding: 4px 8px;
+  }
+  [data-slot="filter-categories"] > div:last-child {
+    height: 36px;
+  }
+}
+
+/* Final focus contract for overlay fields: border feedback, never a ring.
+   Covers raw search inputs and shared Input/Textarea in either theme. */
+:is(
+    [data-slot="dialog-content"],
+    [data-slot="popover-content"],
+    [data-slot="filter-panel"],
+    [data-slot="select-content"]
+  )
+  :is(input, textarea):is(:focus, :focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-ring-offset-shadow: 0 0 #0000;
+}
+[data-slot="filter-categories"] > div:has(> input) {
+  border-bottom-color: var(--pi-line);
+}

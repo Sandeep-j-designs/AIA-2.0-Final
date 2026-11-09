@@ -853,6 +853,7 @@ const Register = ({
 
   const allOnPage =
     !!pageRows.length && pageRows.every((x) => selected.includes(x.id));
+  const someOnPage = pageRows.some((x) => selected.includes(x.id));
 
   const lastPage = Math.max(0, Math.ceil(total / pageSize) - 1);
   /*
@@ -1347,12 +1348,15 @@ const Register = ({
                       >
                         <Checkbox
                           aria-label={`Select every ${journal ? "voucher" : "row"} on this page`}
-                          checked={allOnPage}
-                          onCheckedChange={(checked) =>
+                          checked={allOnPage ? true : someOnPage ? "indeterminate" : false}
+                          onCheckedChange={() => {
+                            const ids = pageRows.map((x) => x.id);
                             onSelectedChange(
-                              checked ? pageRows.map((x) => x.id) : []
-                            )
-                          }
+                              someOnPage
+                                ? selected.filter((id) => !ids.includes(id))
+                                : Array.from(new Set([...selected, ...ids]))
+                            );
+                          }}
                         />
                       </TableHead>
                       {columns.map((column) => (

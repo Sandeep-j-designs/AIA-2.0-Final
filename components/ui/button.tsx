@@ -125,6 +125,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
+        data-variant={variant ?? "default"}
+        data-size={size ?? "default"}
+        data-destructive={
+          isDestructive || variant === "destructive" || undefined
+        }
         className={cn(
           buttonVariants({ variant, size, isDestructive, className })
         )}

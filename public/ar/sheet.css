@@ -37,7 +37,7 @@
   --radius:6px;
   --topbar-h:51px;
   --gutter:20px;
-  --chevron:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%224%206%2016%2012%22%20fill%3D%22none%22%20color%3D%22%23707070%22%20stroke%3D%22%23707070%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20aria-hidden%3D%22true%22%20focusable%3D%22false%22%20class%3D%22aia-icon%20aia-icon-chevron-down%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
+  --chevron:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%224%206%2016%2012%22%20fill%3D%22none%22%20color%3D%22%23707070%22%20stroke%3D%22%23707070%22%20stroke-width%3D%221.7999999999999998%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20aria-hidden%3D%22true%22%20focusable%3D%22false%22%20class%3D%22aia-icon%20aia-icon-chevron-down%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
   --field-shadow:drop-shadow(0 1px 1px rgba(0,0,0,.07));
   --knob-shadow:0 2px 4px rgba(39,39,39,.1);
 }
@@ -347,7 +347,7 @@
 .ar-sheet .picker select{
   appearance:none;border:none;background:none;outline:none;padding:0 18px 0 0;
   color:var(--brand-deep);font-size:12px;line-height:20px;cursor:pointer;
-  background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%224%206%2016%2012%22%20fill%3D%22none%22%20color%3D%22%23707070%22%20stroke%3D%22%23707070%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20aria-hidden%3D%22true%22%20focusable%3D%22false%22%20class%3D%22aia-icon%20aia-icon-chevron-down%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%224%206%2016%2012%22%20fill%3D%22none%22%20color%3D%22%23707070%22%20stroke%3D%22%23707070%22%20stroke-width%3D%221.7999999999999998%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20aria-hidden%3D%22true%22%20focusable%3D%22false%22%20class%3D%22aia-icon%20aia-icon-chevron-down%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
   background-repeat:no-repeat;background-position:right center;
 }
 .ar-sheet .hint{font-size:12px;line-height:16px;color:var(--text-muted)}

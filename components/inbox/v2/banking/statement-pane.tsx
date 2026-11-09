@@ -47,7 +47,7 @@ const StatementPane = ({ txn, lines, around = 7 }: Props) => {
 
   return (
     <div data-source-viewer="" className="flex h-full min-h-0 flex-col bg-pi-page p-5">
-      <div className="source-stage flex min-h-0 flex-1 flex-col overflow-hidden rounded-md border border-[#e2e6ed]">
+      <div className="source-stage flex min-h-0 flex-1 flex-col overflow-hidden rounded-md border border-pi-line">
         <header className="flex shrink-0 items-center gap-3 px-4 py-3">
           <h2
             className="min-w-0 truncate text-overline font-semibold uppercase leading-4 text-pi-body"
@@ -59,8 +59,8 @@ const StatementPane = ({ txn, lines, around = 7 }: Props) => {
         <div className="min-h-0 flex-1 overflow-auto px-4 pb-4">
           {/* The page itself: printed, not interface — small print is the
               content here, as on the bill PDFs. */}
-          <article className="mx-auto max-w-[640px] rounded-sm bg-white px-6 py-5 shadow-[0_1px_3px_rgba(16,24,40,0.12)]">
-            <div className="flex items-start justify-between gap-4 border-b border-[#e2e6ed] pb-3">
+          <article className="mx-auto max-w-[640px] rounded-sm bg-white px-6 py-5 shadow-[0_1px_3px_rgb(var(--shadow-rgb)_/_0.12)]">
+            <div className="flex items-start justify-between gap-4 border-b border-pi-line pb-3">
               <div>
                 <p className="text-body font-semibold text-pi-ink">
                   {txn.bankName || txn.bankAccountName}
@@ -92,7 +92,7 @@ const StatementPane = ({ txn, lines, around = 7 }: Props) => {
                       ref={here ? mark : undefined}
                       aria-current={here ? "true" : undefined}
                       className={cn(
-                        "border-t border-[#eef1f5] align-top",
+                        "border-t border-pi-line align-top",
                         here
                           ? "relative bg-pi-brand-tint text-pi-ink outline outline-2 -outline-offset-1 outline-pi-brand"
                           : "text-pi-body opacity-70"
@@ -120,7 +120,7 @@ const StatementPane = ({ txn, lines, around = 7 }: Props) => {
                 })}
               </tbody>
             </table>
-            <p className="mt-4 border-t border-[#e2e6ed] pt-3 text-caption text-pi-faint">
+            <p className="mt-4 border-t border-pi-line pt-3 text-caption text-pi-faint">
               Read from the uploaded statement. {page.length} of{" "}
               {ordered.length} lines shown.
             </p>
@@ -146,7 +146,7 @@ export const CashSourcePane = ({
   onOpenSource: (itemId: string) => void;
 }) => (
   <div data-source-viewer="" className="flex h-full min-h-0 flex-col bg-pi-page p-5">
-    <div className="source-stage flex min-h-0 flex-1 flex-col overflow-hidden rounded-md border border-[#e2e6ed]">
+    <div className="source-stage flex min-h-0 flex-1 flex-col overflow-hidden rounded-md border border-pi-line">
       <header className="flex shrink-0 items-center gap-3 px-4 py-3">
         <h2 className="min-w-0 truncate text-overline font-semibold uppercase leading-4 text-pi-body">
           Cash book · {txn.bankAccountName}

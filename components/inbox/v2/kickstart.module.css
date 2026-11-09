@@ -1956,15 +1956,15 @@
   --tone-200: var(--palette-blue-200);
   --tone-600: var(--palette-blue-600);
 }
-/* Email takes the chart blues: --chart-3 for the tint and --chart-4 for the
-   icon. It stays in the brand's own family, but sits far enough from upload's
-   indigo (hue 230) at hue 210 to read as its own channel. Amber was tried and
-   dropped because it reads as a warning. */
+/* Email takes the palette's second blue (sky, styles/palette.css). It stays
+   in the brand's own family, but sits far enough from upload's royal blue to
+   read as its own channel, in both themes. Amber was tried and dropped
+   because it reads as a warning. */
 .email {
-  --tone-50: hsl(var(--chart-3) / 0.12);
-  --tone-100: hsl(var(--chart-3) / 0.35);
-  --tone-200: hsl(var(--chart-3) / 0.7);
-  --tone-600: hsl(var(--chart-4));
+  --tone-50: var(--background-secondary-series);
+  --tone-100: var(--border-secondary-series);
+  --tone-200: var(--border-secondary-series);
+  --tone-600: var(--accent-secondary-series);
 }
 .whatsapp {
   --tone-50: var(--palette-green-50);

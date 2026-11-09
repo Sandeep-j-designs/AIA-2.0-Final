@@ -5,7 +5,7 @@
   border-radius: var(--radius-md, 8px);
   background: var(--background);
   background: var(--pi-surface-panel);
-  box-shadow: 0 4px 24px -16px #172b4d33;
+  box-shadow: 0 4px 24px -16px rgb(var(--shadow-rgb) / 20%);
   overflow: clip;
 }
 .overviewHero {
@@ -17,7 +17,7 @@
     var(--pi-surface-panel) 10%,
     var(--pi-brand-tint)
   );
-  box-shadow: 0 4px 24px -16px #172b4d33;
+  box-shadow: 0 4px 24px -16px rgb(var(--shadow-rgb) / 20%);
 }
 .overviewPreview {
   padding: 24px;
@@ -352,7 +352,7 @@
   background: var(--pi-surface-panel);
   color: var(--pi-brand);
   border: 1px solid var(--pi-brand-border);
-  box-shadow: 0 2px 5px #172b4d08;
+  box-shadow: 0 2px 5px rgb(var(--shadow-rgb) / 3%);
 }
 .previewRoute {
   display: flex;
@@ -382,7 +382,7 @@
   background: var(--pi-surface-panel);
   border: 1px solid var(--pi-line);
   border-radius: var(--radius-md, 8px);
-  box-shadow: 0 10px 24px -16px #172b4d40;
+  box-shadow: 0 10px 24px -16px rgb(var(--shadow-rgb) / 25%);
 }
 .previewFiles {
   overflow: visible;

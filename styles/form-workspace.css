@@ -13,7 +13,7 @@ html :is(.ap-sheet, .ar-sheet) .card {
   border-radius: var(--radius-md, 8px);
   padding: 24px;
   gap: 24px 24px;
-  box-shadow: 0 2px 5px #18244a03;
+  box-shadow: 0 2px 5px rgb(var(--shadow-rgb) / 1%);
 }
 html :is(.ap-sheet, .ar-sheet) .card > h2 {
   font-size: var(--type-lead);
@@ -41,7 +41,7 @@ html :is(.ap-sheet, .ar-sheet) .card .control {
   min-height: 42px;
   border-radius: var(--radius-md, 8px);
   background: var(--pi-surface-panel);
-  box-shadow: 0 1px 2px #18244a04;
+  box-shadow: 0 1px 2px rgb(var(--shadow-rgb) / 2%);
   transition:
     border-color 0.15s,
     box-shadow 0.15s;
@@ -79,11 +79,11 @@ html :is(.ap-sheet, .ar-sheet) .errsum {
 }
 html :is(.ap-sheet, .ar-sheet) dialog {
   border-radius: var(--radius-lg, 12px);
-  box-shadow: 0 24px 80px #111b3433;
+  box-shadow: 0 24px 80px rgb(var(--shadow-rgb) / 20%);
   max-height: calc(100dvh - 48px);
 }
 html :is(.ap-sheet, .ar-sheet) dialog::backdrop {
-  background: #101a304d;
+  background: var(--overlay-scrim);
   backdrop-filter: blur(3px);
 }
 /* ── form fields: the bill form's metrics, everywhere (7 Oct 2026) ─────────
@@ -180,7 +180,7 @@ html :is(.ap-sheet, .ar-sheet) dialog::backdrop {
   border: 1px solid var(--pi-line);
   border-radius: var(--radius-md, 8px);
   background: var(--pi-surface-panel);
-  box-shadow: var(--shadow-contact, 0 1px 2px #18244a0a);
+  box-shadow: var(--shadow-contact, 0 1px 2px rgb(var(--shadow-rgb) / 4%));
 }
 .form-panel .form-section:not(:first-child) {
   padding-top: 24px;
@@ -223,7 +223,7 @@ html :is(.ap-sheet, .ar-sheet) dialog::backdrop {
   font-weight: 500;
   box-shadow:
     0 0 0 1px var(--pi-line-2),
-    0 1px 2px #18244a14;
+    0 1px 2px rgb(var(--shadow-rgb) / 8%);
 }
 .form-starters button:focus-visible,
 .form-more > button:focus-visible {

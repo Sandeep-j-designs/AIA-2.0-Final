@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { cn } from "@/lib/utils";
-import { CheckIcon } from "@/components/icons";
+import { CheckIcon, Minus } from "@/components/icons";
 
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
@@ -20,7 +20,13 @@ const Checkbox = React.forwardRef<
     <CheckboxPrimitive.Indicator
       className={cn("flex items-center justify-center text-current")}
     >
-      <CheckIcon className="h-3 w-3" strokeWidth={2.5} />
+      {/* Some, not all: a dash, so a header box never reads as "none"
+          while rows below it are ticked (9 Nov 2026). */}
+      {props.checked === "indeterminate" ? (
+        <Minus className="h-3 w-3" strokeWidth={2.5} />
+      ) : (
+        <CheckIcon className="h-3 w-3" strokeWidth={2.5} />
+      )}
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ));

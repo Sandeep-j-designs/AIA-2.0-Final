@@ -111,7 +111,7 @@ export const SELECT_WIDTH = 40;
  * the distribution below.
  */
 // 84 holds "Actions" at the 14px header size (5 Nov 2026).
-export const ACTIONS_WIDTH = 84;
+export const ACTIONS_WIDTH = 64;
 export const preferredWidths = (sizes: ColumnSizes) =>
   Object.fromEntries(
     Object.entries(sizes).map(([key, size]) => [key, size.preferred])

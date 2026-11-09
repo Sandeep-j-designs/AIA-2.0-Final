@@ -12,8 +12,9 @@ const Textarea = React.forwardRef<
   );
   return (
     <textarea
+      data-slot="textarea"
       className={cn(
-        "flex min-h-[60px] w-full rounded-sm border border-pi-line-2 bg-background p-[var(--pad-control)] text-small placeholder:text-pi-faint focus-visible:outline-none focus-visible:border-pi-brand focus-visible:shadow-[0_0_0_3px_rgba(67,88,191,0.2)] disabled:cursor-not-allowed disabled:opacity-50 md:text-body",
+        "flex min-h-[60px] w-full rounded-sm border border-pi-line-2 bg-background p-[var(--pad-control)] text-small placeholder:text-pi-faint focus-visible:outline-none focus-visible:border-pi-brand focus-visible:shadow-[var(--control-focus)] disabled:cursor-not-allowed disabled:opacity-50 md:text-body",
         className
       )}
       ref={ref}

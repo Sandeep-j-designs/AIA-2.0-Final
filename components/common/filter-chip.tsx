@@ -48,6 +48,8 @@ const FilterChip = forwardRef<HTMLDivElement, Props>(
 
     return (
       <div
+        data-slot="filter-chip"
+        data-applied={hasValue}
         ref={ref}
         className={cn(
           // Precision Indigo control: 6px corners, a line-2 hairline and the

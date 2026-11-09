@@ -900,6 +900,7 @@ const BillRegister = ({
 
   const allOnPage =
     !!pageRows.length && pageRows.every((x) => selected.includes(x.id));
+  const someOnPage = pageRows.some((x) => selected.includes(x.id));
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -963,7 +964,7 @@ const BillRegister = ({
                 multi-bill splitter behind the chevron. The halves touch and
                 overlap by a pixel, so their shared border is the one divider.
               */}
-                      <div className="flex">
+                      <div className="ui-split-button flex" role="group" aria-label="Add purchases">
                         <Button
                           className="rounded-r-none focus-visible:z-10"
                           onClick={onUpload}
@@ -1306,12 +1307,15 @@ const BillRegister = ({
                         >
                           <Checkbox
                             aria-label="Select every bill on this page"
-                            checked={allOnPage}
-                            onCheckedChange={(checked) =>
+                            checked={allOnPage ? true : someOnPage ? "indeterminate" : false}
+                            onCheckedChange={() => {
+                              const ids = pageRows.map((x) => x.id);
                               onSelectedChange(
-                                checked ? pageRows.map((x) => x.id) : []
-                              )
-                            }
+                                someOnPage
+                                  ? selected.filter((id) => !ids.includes(id))
+                                  : Array.from(new Set([...selected, ...ids]))
+                              );
+                            }}
                           />
                         </TableHead>
                         {shown.map((key, col) => {

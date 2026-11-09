@@ -561,9 +561,15 @@ const Transactions = ({
         )}
       >
         {/* The scroller's own box, so the overlay bars and the floating
-          selection bar sit over the table and end above the pager. */}
-        <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
-          <div ref={scroller} className={PAGE_SCROLL} {...pinEdges}>
+          selection bar sit inside it and end above the pager. */}
+        <div
+          className="relative flex min-h-0 min-w-0 flex-1 flex-col"
+        >
+          <div
+            ref={scroller}
+            className={PAGE_SCROLL}
+            {...pinEdges}
+          >
             <Pinned>
               <PageHead
                 eyebrow="Banking"
@@ -798,7 +804,7 @@ const Transactions = ({
           <OverlayScrollbars scroller={scroller} />
 
           {selected.length > 0 && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-4 z-30 flex justify-center px-4">
+            <div className="pointer-events-none absolute inset-x-0 bottom-11 z-40 flex justify-center px-4">
               <BulkActionBar
                 className="pointer-events-auto"
                 selectedCount={selected.length}

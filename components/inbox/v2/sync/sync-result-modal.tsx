@@ -1,5 +1,4 @@
 import React from "react";
-import { AlertTriangle, Check, CircleAlert } from "@/components/icons";
 import {
   Dialog,
   DialogContent,
@@ -7,7 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { SyncOutcomeIllustration } from "../illustrations";
 import type { SyncRun } from "@/types/pages/inbox/sync";
 
 type SyncResultModalProps = {
@@ -47,8 +46,6 @@ const SyncResultModal = ({
 
   const content = {
     success: {
-      ring: "bg-pi-success-bg text-pi-success",
-      icon: Check,
       // "All 1 Invoice" — the "All" only earns its place over a plural.
       title:
         total === 1
@@ -59,24 +56,18 @@ const SyncResultModal = ({
       onAction: onDone,
     },
     partial: {
-      ring: "bg-pi-warning-bg text-pi-warning",
-      icon: AlertTriangle,
       title: `${failed} ${failed === 1 ? unitPlural.replace(/s$/, "").toLowerCase() : unitPlural.toLowerCase()} didn’t reach ERP`,
       body: `${pushed} of ${total} went through. Check the rest and sync again.`,
       action: "See what failed",
       onAction: onReviewFailures,
     },
     failure: {
-      ring: "bg-pi-danger-bg text-pi-danger",
-      icon: CircleAlert,
       title: "Nothing reached ERP",
       body: `None of the ${total} ${unit.toLowerCase()} went through. Check that ERP is open and connected, then sync again.`,
       action: "See what went wrong",
       onAction: onReviewFailures,
     },
   }[outcome];
-
-  const Icon = content.icon;
 
   return (
     <Dialog open={open}>
@@ -85,15 +76,10 @@ const SyncResultModal = ({
         onEscapeKeyDown={(event) => event.preventDefault()}
         onInteractOutside={(event) => event.preventDefault()}
       >
-        <div className="flex flex-col items-center gap-3 px-6 pb-6 pt-8 text-center">
-          <span
-            className={cn(
-              "mb-2 flex h-14 w-14 items-center justify-center rounded-full",
-              content.ring
-            )}
-          >
-            <Icon className="h-6 w-6" strokeWidth={2} />
-          </span>
+        <div className="flex flex-col items-center gap-3 px-6 pb-6 pt-6 text-center">
+          <div className="mb-1 w-[260px] max-w-full">
+            <SyncOutcomeIllustration outcome={outcome} />
+          </div>
           <DialogTitle className="text-h2 text-pi-ink">
             {content.title}
           </DialogTitle>

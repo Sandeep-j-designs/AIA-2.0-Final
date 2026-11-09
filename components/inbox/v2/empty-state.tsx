@@ -41,6 +41,8 @@ type Props = {
   body?: React.ReactNode;
   flow?: FlowStep[];
   icon?: IconComponent;
+  /** An illustration drawn in place of the stages or the glyph tile. */
+  art?: React.ReactNode;
   /** Present: the filtered-to-nothing variant. */
   filters?: ActiveFilter[];
   onClear?: () => void;
@@ -127,6 +129,7 @@ export const EmptyState = ({
   body,
   flow,
   icon: Icon,
+  art,
   filters,
   onClear,
   actions,
@@ -145,7 +148,11 @@ export const EmptyState = ({
         className
       )}
     >
-      {flow?.length ? (
+      {art ? (
+        <div aria-hidden className="w-[240px] max-w-full">
+          {art}
+        </div>
+      ) : flow?.length ? (
         <Flow steps={flow} />
       ) : Glyph ? (
         <span
@@ -159,7 +166,7 @@ export const EmptyState = ({
       <h2
         className={cn(
           "text-lead font-semibold leading-6 text-pi-ink",
-          flow?.length || Glyph ? "mt-6" : null
+          art ? "mt-4" : flow?.length || Glyph ? "mt-6" : null
         )}
       >
         {title}

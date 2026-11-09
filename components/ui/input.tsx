@@ -29,7 +29,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           data-slot="input"
           type={type}
           className={cn(
-            "flex h-control w-full rounded-sm border border-pi-line-2 bg-background p-[var(--pad-control)] text-small text-foreground transition-colors file:border-0 file:bg-transparent file:text-body file:font-medium placeholder:text-pi-faint focus-visible:outline-none focus-visible:border-pi-brand focus-visible:shadow-[0_0_0_3px_rgba(67,88,191,0.2)] disabled:cursor-not-allowed disabled:opacity-60",
+            "flex h-control w-full rounded-sm border border-pi-line-2 bg-background p-[var(--pad-control)] text-small text-foreground transition-colors file:border-0 file:bg-transparent file:text-body file:font-medium placeholder:text-pi-faint focus-visible:outline-none focus-visible:border-pi-brand focus-visible:shadow-[var(--control-focus)] disabled:cursor-not-allowed disabled:opacity-60",
             "data-[invalid=true]:border-destructive-foreground data-[invalid=true]:focus:border-destructive-foreground data-[invalid=true]:hover:border-destructive-foreground",
             error
               ? "border-pi-danger focus:border-pi-danger hover:border-pi-danger"

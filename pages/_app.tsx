@@ -6,6 +6,9 @@ import "@/styles/dialog-workspace.css";
 import "@/styles/bill-form.css";
 import "@/styles/bill-refinement.css";
 import "@/styles/neo-workspace.css";
+import "@/styles/mercury-theme.css";
+import "@/styles/mercury-overlays.css";
+import "@/styles/palette.css";
 import type { AppProps } from "next/app";
 import localFont from "next/font/local";
 import { ThemeProvider } from "next-themes";
@@ -17,17 +20,7 @@ import NeoPanel from "@/components/neo";
 import SheetDatePicker from "@/components/common/date-picker/sheet-date-picker";
 import ErrorBoundary from "@/components/common/error-boundary";
 
-// Type families (SIL OFL), bundled locally so builds never fetch fonts.
-// IBM Plex Sans (variable, 100–700) is the one UI family: text, headings,
-// figures and IDs (5 Nov 2026, replacing Open Sans, whose wide, round set read
-// as a generic default). One typeface, no monospace; IDs and amounts use
-// tabular numerals. Its latin cut has no ₹, which falls to the system face, as
-// it did under Open Sans.
-const plexSans = localFont({
-  src: "../public/fonts/ibm-plex-sans-latin-wght-normal.woff2",
-  weight: "100 700",
-  display: "swap",
-});
+// Neutral system sans-serif approximates Mercury’s Arcadia UI face.
 // Source Serif 4 is Neo's reading voice (19 Oct 2026): its answers are set
 // apart from the UI the way a chat assistant's are, in a text face built for
 // long reading. The latin-ext cut is a second family only for ₹, which the
@@ -67,14 +60,14 @@ const sourceSerifExt = localFont({
  */
 export default function App({ Component, pageProps, router }: AppProps) {
   return (
-    <div className={plexSans.className}>
+    <div style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
       <style jsx global>{`
         :root {
           --font-family-primary:
-            ${plexSans.style.fontFamily}, -apple-system, "Segoe UI", system-ui,
+            Arial, Helvetica, sans-serif, -apple-system, "Segoe UI", system-ui,
             sans-serif;
-          --font-family-display: ${plexSans.style.fontFamily};
-          --font-family-mono: ${plexSans.style.fontFamily};
+          --font-family-display: Arial, Helvetica, sans-serif;
+          --font-family-mono: Arial, Helvetica, sans-serif;
           --font-family-reading:
             ${sourceSerif.style.fontFamily}, ${sourceSerifExt.style.fontFamily},
             Georgia, serif;

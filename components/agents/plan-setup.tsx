@@ -40,7 +40,7 @@ export default function PlanSetup({
 }) {
   const [exceptions, setExceptions] = useState(!!plan.notes);
   const days = Number(plan.escalation);
-  const valid = plan.owner.trim() !== "" && days >= 1 && days <= 90;
+  const valid = plan.owner.trim() !== "" && Number.isInteger(days) && days >= 1 && days <= 90;
   return (
     <form
       className="agent-setup"
@@ -49,8 +49,18 @@ export default function PlanSetup({
         if (valid) onSave();
       }}
     >
-      <section>
-        <h2 className="text-body font-semibold text-pi-ink">How it works</h2>
+      <section className="mb-6">
+        <h2 className="text-body font-semibold text-pi-ink">What this agent will prepare</h2>
+        <p className="mt-2 text-small leading-6 text-pi-body">{agent.outcome}</p>
+        <p className="mt-2 text-caption leading-6 text-pi-body">{agent.permissions}</p>
+      </section>
+      <details className="agent-setup-disclosure" open={saved || undefined}>
+        <summary>
+          <span className="block text-small font-medium text-pi-ink">Your working preferences</span>
+          <span className="mt-1 block text-caption text-pi-body">
+            {plan.cadence} · {plan.owner || "Choose an owner"} · Escalate after {plan.escalation || "—"} days
+          </span>
+        </summary>
         <div className="mt-3 grid gap-x-5 gap-y-4 sm:grid-cols-2">
           <label className="block min-w-0">
             <span className="mb-1 block text-caption font-medium text-pi-body">
@@ -83,6 +93,8 @@ export default function PlanSetup({
                 type="number"
                 min={1}
                 max={90}
+                step={1}
+                aria-invalid={!Number.isInteger(days) || days < 1 || days > 90}
                 value={plan.escalation}
                 onChange={(e) => onChange({ escalation: e.target.value })}
                 className="pr-12"
@@ -116,15 +128,15 @@ export default function PlanSetup({
             Leave something out
           </Button>
         )}
-      </section>
+      </details>
 
-      <section className="mt-8">
+      <section className="mt-6">
         <h2 className="text-body font-semibold text-pi-ink">What it uses</h2>
         <p className="mt-2 text-small leading-6 text-pi-body">
           {agent.sources.join(" · ")}
         </p>
         <p className="mt-2 text-small leading-6 text-pi-body">
-          {agent.permissions}
+          {agent.readiness}
         </p>
       </section>
 
@@ -133,7 +145,7 @@ export default function PlanSetup({
           Cancel
         </Button>
         <Button type="submit" disabled={!valid}>
-          {saved ? "Save changes" : "Turn on"}
+          {saved ? "Save changes" : "Save agent setup"}
         </Button>
       </footer>
     </form>

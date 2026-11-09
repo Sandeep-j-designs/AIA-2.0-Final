@@ -289,7 +289,7 @@ export default function Preview({ item, embedded }: Props) {
         ref={card}
         className={cn(
           "source-stage flex min-h-0 flex-1 flex-col overflow-hidden",
-          embedded ? "rounded-md" : "rounded-md border border-[#e2e6ed]"
+          embedded ? "rounded-md" : "rounded-md border border-pi-line"
         )}
       >
         <header className="flex shrink-0 items-center gap-3 px-4 py-3">
